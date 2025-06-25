@@ -1,0 +1,330 @@
+# Tower Defense Game - Project Blueprint
+
+## 🎮 Project Overview
+A classic tower defense game built with Python + Pygame focusing on strategic tower placement and wave-based enemy progression. The game features multiple tower types, diverse enemies, and progressive difficulty across a single handcrafted level.
+
+## 🎯 Core Game Concept
+
+### Objective
+Defend your base by strategically placing towers along enemy paths to prevent waves of enemies from reaching the end.
+
+### Core Gameplay Loop
+1. Place towers on designated grid spots
+2. Manage gold resources earned from kills
+3. Survive increasingly difficult enemy waves
+4. Upgrade strategy as waves progress
+5. Win by surviving all waves or lose when lives reach zero
+
+## 📈 Development Roadmap
+
+### Phase 1: Complete Playable Game (1 week) ✅ CURRENT PHASE
+**Goal: Fully functional single-level tower defense experience**
+
+**Must-Have Features:**
+- Single handcrafted level with clear start/end points
+- 3 essential tower types (Cannon, Machine Gun, Missile)
+- 4 enemy types (Basic, Fast, Heavy, Flying)
+- 10 progressive waves with increasing difficulty
+- Complete gameplay loop with win/lose conditions
+- Essential UI (tower selection, wave counter, lives, gold)
+- Basic graphics and audio
+
+### Phase 2: Content & Variety (1 week)
+- 4 additional levels with different layouts
+- 2 more tower types + upgrade system
+- 3 additional enemy types including bosses
+- Difficulty modes and enhanced graphics
+
+### Phase 3: Polish & Features (3-4 days)
+- Speed controls, statistics, high scores
+- Improved UI/UX and sound polish
+- Tutorial system and settings menu
+
+## 🏗️ Technical Specifications
+
+### Technology Stack
+- **Language**: Python 3.8+
+- **Graphics**: Pygame 2.0+
+- **Architecture**: Component-based game objects
+- **Resolution**: 800x600 base resolution
+- **Target FPS**: 60 FPS
+
+### Core Systems Architecture
+```
+Game Manager
+├── Level Manager (pathfinding, grid, terrain)
+├── Wave Manager (enemy spawning, progression)
+├── Tower Manager (placement, targeting, shooting)
+├── Enemy Manager (movement, health, types)
+├── UI Manager (interface, user input)
+├── Audio Manager (sounds, music)
+└── Resource Manager (gold, lives, scoring)
+```
+
+## 📋 Phase 1 Detailed Implementation Plan
+
+### Day 1-2: Foundation
+**Tasks:**
+- [ ] Set up Pygame project structure
+- [ ] Implement basic game loop (init, update, render, events)
+- [ ] Create window management and basic screen structure
+- [ ] Implement grid-based coordinate system (40x40 pixel tiles)
+- [ ] Create basic enemy pathfinding using A* or waypoints
+- [ ] Basic tower placement system with grid snapping
+
+**Files to Create:**
+- `main.py` - Entry point and main game loop
+- `game.py` - Core game state management
+- `level.py` - Level data and pathfinding
+- `tower.py` - Tower base class and types
+- `enemy.py` - Enemy base class and types
+- `constants.py` - Game constants and configuration
+
+**Success Criteria:**
+- Game window opens and responds to input
+- Can place towers on valid grid positions
+- Enemies spawn and follow path from start to end
+
+### Day 3-4: Core Combat
+**Tasks:**
+- [ ] Implement tower shooting mechanics with projectiles
+- [ ] Create projectile physics and collision detection
+- [ ] Enemy health and damage systems
+- [ ] Tower targeting system (nearest, strongest, etc.)
+- [ ] Gold reward system for enemy kills
+- [ ] Basic particle effects for explosions
+
+**Key Classes:**
+```python
+class Projectile:
+    # position, velocity, damage, target tracking
+    
+class Tower:
+    # range, damage, fire_rate, targeting, upgrade_level
+    
+class Enemy:
+    # health, speed, position, path_progress, rewards
+```
+
+**Success Criteria:**
+- Towers automatically target and shoot at enemies
+- Projectiles travel and hit enemies accurately
+- Enemies take damage and die appropriately
+- Gold is awarded for kills
+
+### Day 5-6: Wave System
+**Tasks:**
+- [ ] Wave spawning system with configurable enemy compositions
+- [ ] Progressive difficulty scaling across 10 waves
+- [ ] Enemy type implementation (Basic, Fast, Heavy, Flying)
+- [ ] Tower type specialization (anti-air, splash damage, etc.)
+- [ ] Lives system when enemies reach the end
+- [ ] Win/lose condition checking
+
+**Wave Configuration:**
+```python
+WAVES = [
+    # Wave 1-3: Tutorial waves
+    {"basic": 10, "delay": 1.0},
+    {"basic": 15, "delay": 0.8},
+    {"basic": 20, "delay": 0.6},
+    
+    # Wave 4-6: Introduce variety
+    {"basic": 15, "fast": 5, "delay": 0.8},
+    {"basic": 20, "fast": 8, "delay": 0.6},
+    {"basic": 25, "fast": 10, "heavy": 2, "delay": 0.5},
+    
+    # Wave 7-10: Full complexity
+    {"basic": 20, "fast": 15, "heavy": 5, "delay": 0.4},
+    {"basic": 25, "fast": 20, "heavy": 8, "flying": 3, "delay": 0.3},
+    {"basic": 30, "fast": 25, "heavy": 12, "flying": 8, "delay": 0.3},
+    {"basic": 40, "fast": 30, "heavy": 15, "flying": 15, "delay": 0.2}  # Boss wave
+]
+```
+
+**Success Criteria:**
+- All 10 waves spawn with proper timing and composition
+- Difficulty increases appropriately
+- All enemy types behave correctly
+- Game ends with clear win/lose state
+
+### Day 7: Integration & Polish
+**Tasks:**
+- [ ] UI integration (buttons, displays, user feedback)
+- [ ] Basic sprite graphics or colored rectangles
+- [ ] Sound effects integration (shooting, explosions, UI)
+- [ ] Background music implementation
+- [ ] Playtesting and balance adjustments
+- [ ] Bug fixes and performance optimization
+
+**UI Requirements:**
+- Tower selection panel with costs and descriptions
+- Current gold and lives display
+- Wave counter and next wave preview
+- Game over screen with restart option
+- Pause functionality
+
+**Success Criteria:**
+- Game is fully playable from start to finish
+- Balanced difficulty that's challenging but fair
+- Clear visual and audio feedback for all actions
+- Smooth 60 FPS performance
+
+## 🎯 Game Balance Specifications
+
+### Economy Balance
+- **Starting Gold**: 100
+- **Starting Lives**: 20
+- **Kill Rewards**: Basic(5), Fast(8), Heavy(15), Flying(12)
+
+### Tower Specifications
+```
+Cannon Tower:
+- Cost: 25 gold
+- Damage: 25
+- Range: 80 pixels
+- Fire Rate: 1.5 shots/sec
+- Special: Small splash damage (20px radius)
+
+Machine Gun Tower:
+- Cost: 40 gold
+- Damage: 8
+- Range: 60 pixels
+- Fire Rate: 5 shots/sec
+- Special: High accuracy, anti-swarm
+
+Missile Tower:
+- Cost: 60 gold
+- Damage: 40
+- Range: 100 pixels
+- Fire Rate: 0.8 shots/sec
+- Special: Homing missiles, anti-air
+```
+
+### Enemy Specifications
+```
+Basic Infantry:
+- Health: 50
+- Speed: 30 pixels/sec
+- Reward: 5 gold
+
+Fast Scout:
+- Health: 25
+- Speed: 60 pixels/sec
+- Reward: 8 gold
+
+Heavy Tank:
+- Health: 150
+- Speed: 15 pixels/sec
+- Reward: 15 gold
+
+Flying Unit:
+- Health: 40
+- Speed: 40 pixels/sec
+- Reward: 12 gold
+- Special: Immune to splash damage
+```
+
+## 📊 Progress Tracking
+
+### Phase 1 Checklist
+**Foundation (Days 1-2):** ✅ COMPLETED
+- [x] Project structure setup
+- [x] Basic game loop implementation
+- [x] Grid system and pathfinding
+- [x] Tower placement mechanics
+
+**Combat System (Days 3-4):**
+- [ ] Tower shooting mechanics
+- [ ] Projectile system and collision
+- [ ] Enemy health and damage
+- [ ] Gold reward system
+
+**Wave System (Days 5-6):**
+- [ ] Wave spawning implementation
+- [ ] All enemy types functional
+- [ ] Lives system and game states
+- [ ] Win/lose conditions
+
+**Polish (Day 7):**
+- [ ] UI integration complete
+- [ ] Graphics and audio implemented
+- [ ] Balance testing completed
+- [ ] Final bug fixes
+
+### Current Status: 🚧 DAYS 1-2 COMPLETE
+**Next Action:** Continue with Phase 1, Day 3-4 core combat system
+
+### Success Metrics
+- [ ] Game completable from start to finish
+- [ ] 10-15 minutes of engaging gameplay
+- [ ] Balanced challenge progression
+- [ ] Smooth performance (60 FPS)
+- [ ] Clear win/lose feedback
+
+---
+
+## 🛠️ Development Notes
+
+### Complete File Structure & Status
+```
+game/
+├── main.py                          # 🚀 Entry point and main game loop [✅ FUNCTIONAL]
+├── requirements.txt                 # 📦 Python dependencies [✅ COMPLETE]
+├── README.md                        # 📖 Project documentation [✅ COMPLETE]
+├── PROJECT_STRUCTURE.md            # 📋 Architecture reference [✅ COMPLETE]
+├── .cursorrules                     # 🎯 This file - development blueprint [✅ ACTIVE]
+│
+├── src/                            # 💻 Source Code
+│   ├── game.py                     # 🎮 Core game class and state management [✅ FUNCTIONAL]
+│   ├── level.py                    # 🗺️ Level data, pathfinding, and terrain [✅ FUNCTIONAL]
+│   ├── tower.py                    # 🏰 Tower classes and projectile system [✅ FUNCTIONAL]
+│   ├── enemy.py                    # 👾 Enemy classes and wave management [✅ FUNCTIONAL]
+│   ├── ui.py                       # 🖥️ User interface system [✅ FUNCTIONAL]
+│   ├── audio.py                    # 🔊 Audio management [🚧 PLACEHOLDER - Day 7]
+│   ├── projectile.py               # 💥 Projectile system [🚧 PLACEHOLDER - Optional]
+│   └── constants.py                # ⚙️ Game configuration and balance [✅ COMPLETE]
+│
+└── assets/                         # 🎨 Game Assets
+    ├── sprites/                    # 🖼️ Graphics and sprite files [📋 DOCUMENTED]
+    │   └── README.md               # 📝 Sprites documentation [✅ COMPLETE]
+    ├── sounds/                     # 🎵 Audio files [📋 DOCUMENTED]
+    │   └── README.md               # 📝 Audio documentation [✅ COMPLETE]
+    └── levels/                     # 🌍 Level data files [📋 DOCUMENTED]
+        └── README.md               # 📝 Levels documentation [✅ COMPLETE]
+```
+
+### System Architecture
+```
+Game Manager (game.py)
+├── Level Manager (level.py)         # Path & grid management
+├── Tower Manager (tower.py)         # Tower placement & combat
+├── Enemy Manager (enemy.py)         # Enemy spawning & movement
+├── UI Manager (ui.py)              # Interface & user input
+└── Audio Manager (audio.py)        # Sound effects & music [Day 7]
+```
+
+### Data Flow
+```
+main.py → Game.update() → {
+    ├── EnemyManager.update()        # Move enemies, check deaths
+    ├── TowerManager.update()        # Target & shoot enemies
+    ├── UI.update()                  # Display current stats
+    └── Game.check_conditions()      # Win/lose/wave logic
+}
+```
+
+### Coding Standards
+- Use type hints for all function parameters and returns
+- Follow PEP 8 style guidelines
+- Create docstrings for all classes and methods
+- Use constants for all magic numbers
+- Implement proper error handling
+
+### Testing Strategy
+- Manual playtesting after each day's work
+- Balance testing with different strategies
+- Performance testing with many units on screen
+- Edge case testing (no money, no lives, etc.)
+
+This blueprint serves as the complete reference for building the tower defense game. All development should follow this structure and meet the specified success criteria for each phase. 
