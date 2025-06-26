@@ -11,7 +11,7 @@ class Projectile:
     """Projectile fired by towers"""
     
     def __init__(self, start_x: float, start_y: float, target_x: float, target_y: float, 
-                 damage: int, speed: float, splash_radius: float = 0, homing: bool = False):
+                 damage: int, speed: float, splash_radius: float = 0, homing: bool = False, piercing: bool = False):
         self.x = start_x
         self.y = start_y
         self.target_x = target_x
@@ -20,6 +20,8 @@ class Projectile:
         self.speed = speed
         self.splash_radius = splash_radius
         self.homing = homing
+        self.piercing = piercing
+        self.hit_enemies = set()  # Track enemies already hit (for piercing)
         
         # Calculate direction
         dx = target_x - start_x
@@ -60,12 +62,17 @@ class Projectile:
         self.y += self.velocity_y * dt
         
         # Check for hits
+        hit_this_frame = False
         for enemy in enemies:
-            if enemy.is_alive:
+            if enemy.is_alive and enemy not in self.hit_enemies:
                 distance = math.sqrt((self.x - enemy.x) ** 2 + (self.y - enemy.y) ** 2)
                 if distance <= enemy.size + 5:  # Hit detection radius
                     self._hit_enemy(enemy, enemies)
-                    return
+                    hit_this_frame = True
+                    
+                    # For non-piercing projectiles, destroy after first hit
+                    if not self.piercing:
+                        return
         
         # Remove projectile if it goes off screen
         if (self.x < -50 or self.x > SCREEN_WIDTH + 50 or 
@@ -74,6 +81,9 @@ class Projectile:
     
     def _hit_enemy(self, primary_enemy, all_enemies: List) -> None:
         """Handle projectile hitting an enemy"""
+        # Mark enemy as hit (for piercing projectiles)
+        self.hit_enemies.add(primary_enemy)
+        
         # Damage primary target
         primary_enemy.take_damage(self.damage)
         
@@ -88,7 +98,9 @@ class Projectile:
                         splash_damage = int(self.damage * damage_ratio * 0.5)  # 50% splash damage
                         enemy.take_damage(splash_damage)
         
-        self.is_alive = False
+        # Only destroy projectile if not piercing
+        if not self.piercing:
+            self.is_alive = False
     
     def render(self, screen: pygame.Surface, level) -> None:
         """Render the projectile"""
@@ -99,7 +111,12 @@ class Projectile:
             # Only render if visible on screen
             if -10 <= screen_x <= GAME_AREA_WIDTH + 10 and -10 <= screen_y <= SCREEN_HEIGHT + 10:
                 # Draw projectile as small circle
-                color = YELLOW if self.homing else WHITE
+                if self.piercing:
+                    color = (255, 0, 255)  # Magenta for laser
+                elif self.homing:
+                    color = YELLOW
+                else:
+                    color = WHITE
                 pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), 3)
 
 class Tower:
@@ -119,6 +136,7 @@ class Tower:
         self.color = stats['color']
         self.projectile_speed = stats['projectile_speed']
         self.homing = stats.get('homing', False)
+        self.piercing = stats.get('piercing', False)
         
         # Position in world coordinates
         self.x = grid_x * GRID_SIZE + GRID_SIZE // 2
@@ -160,7 +178,7 @@ class Tower:
                 distance = math.sqrt((self.x - enemy.x) ** 2 + (self.y - enemy.y) ** 2)
                 if distance <= self.range:
                     # Check if this tower can target flying enemies
-                    if enemy.flying and self.tower_type not in ['missile']:
+                    if enemy.flying and self.tower_type not in ['missile', 'laser']:
                         continue  # Can't target flying enemies
                     enemies_in_range.append((enemy, distance))
         
@@ -185,7 +203,8 @@ class Tower:
             self.damage,
             self.projectile_speed,
             self.splash_radius,
-            self.homing
+            self.homing,
+            self.piercing
         )
         
         # Set target for homing missiles

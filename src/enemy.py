@@ -24,6 +24,8 @@ class Enemy:
         self.color = stats['color']
         self.size = stats['size']
         self.flying = stats.get('flying', False)
+        self.armor = stats.get('armor', 0)
+        self.regeneration = stats.get('regeneration', 0)
         
         # Position and movement
         self.path_progress = 0.0  # 0.0 to 1.0 along the path
@@ -37,7 +39,10 @@ class Enemy:
     
     def take_damage(self, damage: int) -> bool:
         """Take damage and return True if enemy dies"""
-        self.health -= damage
+        # Apply armor reduction
+        actual_damage = max(1, damage - self.armor)  # Minimum 1 damage
+        self.health -= actual_damage
+        
         if self.health <= 0:
             self.is_alive = False
             return True
@@ -47,6 +52,10 @@ class Enemy:
         """Update enemy position and state"""
         if not self.is_alive or self.reached_end:
             return
+        
+        # Handle regeneration
+        if self.regeneration > 0:
+            self.health = min(self.max_health, self.health + self.regeneration * dt)
         
         # Move along path
         distance_to_move = self.speed * dt

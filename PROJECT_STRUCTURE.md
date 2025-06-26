@@ -1,86 +1,204 @@
-# Tower Defense Game - Architecture Reference
+# Tower Defense Game - Technical Architecture
 
-> 📖 **For complete development details, phase planning, and game specifications, see `.cursorrules`**
+## 📋 Development Status
 
-## 🎯 Quick Architecture Overview
+### ✅ Phase 1: Complete Playable Game (COMPLETED)
+- Foundation systems (game loop, grid, pathfinding, tower placement)
+- Core combat (shooting, projectiles, collision, damage)
+- Wave system (spawning, progression, win/lose conditions)
+- Integration & polish (UI, camera system, balance)
 
-This file provides a focused reference for the project's technical architecture and file organization. For comprehensive development planning, progress tracking, and detailed specifications, refer to the main development blueprint in `.cursorrules`.
+### ✅ Phase 2: Enhanced Content & Variety (COMPLETED)
+- **2 Unique Levels**: Forest Path (beginner) and Mountain Pass (advanced)
+- **New Tower Type**: Laser Tower with piercing capability
+- **Advanced Enemies**: Armored units and regenerating boss enemies
+- **Enhanced Gameplay**: 20 total waves across both levels
+- **Level Selection**: Menu system for choosing levels
+
+### 🔮 Phase 3: Polish & Features (PLANNED)
+- Speed controls and enhanced UI
+- Statistics and high score system
+- Improved graphics and complete audio
+- Tutorial system and settings menu
 
 ## 🏗️ System Architecture
 
-### Core Game Systems
-```
-Game Manager (game.py)
-├── Level Manager (level.py)         # Path & grid management
-├── Tower Manager (tower.py)         # Tower placement & combat
-├── Enemy Manager (enemy.py)         # Enemy spawning & movement  
-├── UI Manager (ui.py)              # Interface & user input
-└── Audio Manager (audio.py)        # Sound effects & music
-```
-
-### Data Flow
+### Core Game Loop
 ```
 main.py → Game.update() → {
-    ├── EnemyManager.update()        # Move enemies, check deaths
-    ├── TowerManager.update()        # Target & shoot enemies
-    ├── UI.update()                  # Display current stats
-    └── Game.check_conditions()      # Win/lose/wave logic
+    ├── Level.update_camera()       # Camera panning system
+    ├── EnemyManager.update()       # Enemy movement & spawning
+    ├── TowerManager.update()       # Tower targeting & shooting
+    ├── UI.update()                 # Interface rendering
+    └── Game.check_conditions()     # Win/lose/wave logic
 }
 ```
 
-## 📁 File Organization Strategy
+### Component Systems
 
-### Core Implementation Files
-- **`src/game.py`** - Central coordinator, handles all game states and system integration
-- **`src/level.py`** - Manages pathfinding, grid system, and terrain logic
-- **`src/tower.py`** - Tower behavior, targeting, and projectile management
-- **`src/enemy.py`** - Enemy types, movement, and wave spawning
-- **`src/ui.py`** - User interface, stats display, and input handling
-- **`src/constants.py`** - Configuration, balance, and game data
+#### Level Management (`src/level.py`)
+- **Multi-level support**: Configurable levels with unique paths
+- **Camera system**: Smooth panning with WASD/Arrow keys
+- **Pathfinding**: Smooth enemy movement along predefined routes
+- **Grid system**: 40x40 pixel grid for tower placement
 
-### Support & Future Files
-- **`src/audio.py`** - Audio system (placeholder for Day 7)
-- **`src/projectile.py`** - Projectile separation (optional refactor)
+#### Tower System (`src/tower.py`)
+- **4 Tower Types**: Cannon, Machine Gun, Missile, Laser
+- **Projectile Physics**: Homing, splash damage, piercing
+- **Targeting System**: Closest enemy priority with flying detection
+- **Range Visualization**: Mouse hover preview
 
-### Asset Structure
-- **`assets/sprites/`** - Graphics files (documented for Phase 2)
-- **`assets/sounds/`** - Audio files (documented for Phase 2)
-- **`assets/levels/`** - Level data files (documented for Phase 2)
+#### Enemy System (`src/enemy.py`)
+- **6 Enemy Types**: Basic, Fast, Heavy, Flying, Armored, Boss
+- **Advanced Mechanics**: Armor reduction, health regeneration
+- **Wave Management**: Configurable spawning with delays
+- **Path Following**: Smooth movement along level paths
 
-## 🔧 Key Design Decisions
+#### User Interface (`src/ui.py`)
+- **Game Statistics**: Gold, lives, wave progress
+- **Tower Selection**: Visual buttons with costs and descriptions
+- **Control Instructions**: Comprehensive help system
+- **Level Information**: Current level display
 
-### Phase 1 Architecture (Current)
-- **Monolithic tower.py** - Projectiles integrated for rapid development
-- **Hardcoded level path** - Single level in constants.py 
-- **Placeholder audio** - Focus on core gameplay mechanics first
-- **Simple graphics** - Pygame primitives for immediate functionality
+## 📊 Data Architecture
 
-### Component Responsibilities
-- **game.py** - State management, system coordination, user input
-- **level.py** - Grid math, pathfinding algorithms, terrain validation
-- **tower.py** - Combat logic, targeting algorithms, projectile physics
-- **enemy.py** - Movement AI, health management, wave scheduling
-- **ui.py** - Rendering, stats display, user feedback
-- **constants.py** - Balance tuning, configuration management
+### Configuration System (`src/constants.py`)
+```python
+LEVELS = {
+    1: {
+        'name': 'Forest Path',
+        'path': [...],  # Grid coordinates
+        'waves': [...]  # Enemy compositions
+    },
+    2: {
+        'name': 'Mountain Pass', 
+        'path': [...],  # More complex path
+        'waves': [...]  # Harder enemy waves
+    }
+}
 
-## 🎮 Quick Usage
+TOWER_TYPES = {
+    'laser': {
+        'cost': 80,
+        'damage': 15,
+        'range': 120,
+        'fire_rate': 10.0,
+        'piercing': True  # New capability
+    }
+}
 
-```bash
-# Install and run
-pip install -r requirements.txt
-python main.py
-
-# Verify structure
-find . -name "*.py" | sort
+ENEMY_TYPES = {
+    'armored': {
+        'health': 200,
+        'armor': 5,  # Damage reduction
+        'reward': 25
+    },
+    'boss': {
+        'health': 500,
+        'armor': 10,
+        'regeneration': 2  # HP per second
+    }
+}
 ```
 
-## 📖 Development Reference
+## 🎮 Game Flow
 
-**For complete development information:**
-- **Game specifications & balance** → `.cursorrules`
-- **Phase planning & progress** → `.cursorrules` 
-- **Implementation details** → `.cursorrules`
-- **Wave configurations** → `.cursorrules`
-- **Success criteria** → `.cursorrules`
+### Menu System
+1. **Level Selection**: Choose between Forest Path or Mountain Pass
+2. **Current Level Display**: Shows selected level name
+3. **Instructions**: Clear control explanations
 
-This architecture file focuses on technical structure while `.cursorrules` contains the comprehensive development blueprint. 
+### Gameplay Loop
+1. **Wave Preparation**: 3-second delay between waves
+2. **Enemy Spawning**: Configurable compositions and timing
+3. **Tower Combat**: Real-time targeting and projectile physics
+4. **Resource Management**: Gold earned from kills
+5. **Victory/Defeat**: Wave completion or life depletion
+
+### Advanced Features
+- **Camera Panning**: Explore full level layouts
+- **Piercing Projectiles**: Laser towers hit multiple enemies
+- **Armor System**: Damage reduction mechanics
+- **Boss Regeneration**: Healing over time challenges
+
+## 🔧 Technical Implementation
+
+### Performance Optimizations
+- **Viewport Culling**: Only render visible entities
+- **Efficient Collision**: Spatial partitioning for projectiles
+- **Memory Management**: Proper cleanup of dead entities
+- **60 FPS Target**: Smooth gameplay experience
+
+### Code Quality Standards
+- **Type Hints**: All function parameters and returns
+- **Documentation**: Comprehensive docstrings
+- **Error Handling**: Graceful failure management
+- **PEP 8 Compliance**: Consistent code style
+
+### Extensibility Design
+- **Modular Systems**: Independent, loosely coupled components
+- **Configuration-Driven**: Easy addition of new content
+- **Event System**: Clean communication between systems
+- **Plugin Architecture**: Ready for future enhancements
+
+## 📁 File Organization
+
+```
+game/
+├── main.py                    # 🚀 Entry point [STABLE]
+├── requirements.txt           # 📦 Dependencies [STABLE]
+├── README.md                  # 📖 User documentation [UPDATED]
+├── PROJECT_STRUCTURE.md       # 📋 This file [UPDATED]
+├── .cursorrules              # 🎯 Development blueprint [ACTIVE]
+│
+├── src/                      # 💻 Source Code
+│   ├── game.py               # 🎮 Core game logic [ENHANCED - Level selection]
+│   ├── level.py              # 🗺️ Level management [ENHANCED - Multi-level]
+│   ├── tower.py              # 🏰 Tower & projectile systems [ENHANCED - Laser tower]
+│   ├── enemy.py              # 👾 Enemy management [ENHANCED - Advanced enemies]
+│   ├── ui.py                 # 🖥️ User interface [ENHANCED - Level info]
+│   ├── constants.py          # ⚙️ Game configuration [MAJOR UPDATE]
+│   └── audio.py              # 🔊 Audio system [PLACEHOLDER - Phase 3]
+│
+└── assets/                   # 🎨 Game Assets [DOCUMENTED]
+    ├── sprites/              # 🖼️ Graphics [PLACEHOLDER]
+    ├── sounds/               # 🎵 Audio [PLACEHOLDER]
+    └── levels/               # 🌍 Level data [DOCUMENTED]
+```
+
+## 🎯 Balance & Tuning
+
+### Tower Balance
+- **Progression**: Cannon → Machine Gun → Missile → Laser
+- **Specialization**: Each tower has unique role and enemies it excels against
+- **Cost Scaling**: Higher cost towers provide proportional value
+- **Range Variety**: Different engagement distances for strategic depth
+
+### Enemy Progression
+- **Level 1**: Gradual introduction of mechanics
+- **Level 2**: Immediate challenge with advanced enemies
+- **Armor System**: Creates need for high-damage or high-rate towers
+- **Boss Fights**: Multi-tower coordination required
+
+### Economic Balance
+- **Starting Resources**: 100 gold, 20 lives
+- **Reward Scaling**: 5-100 gold based on enemy difficulty
+- **Tower Costs**: 25-80 gold with clear progression
+- **Risk/Reward**: Higher investment towers counter harder enemies
+
+## 🚀 Future Expansion Points
+
+### Phase 3 Ready Systems
+- **Speed Controls**: Game state already supports time scaling
+- **Statistics**: Event system tracks all player actions
+- **High Scores**: Game completion data easily serializable
+- **Enhanced Graphics**: Rendering system ready for sprite integration
+- **Audio Integration**: Placeholder system ready for sound effects
+
+### Extensibility Features
+- **New Levels**: Simple addition to LEVELS configuration
+- **New Towers**: Plug-and-play tower type system
+- **New Enemies**: Flexible enemy property system
+- **New Mechanics**: Event-driven architecture supports additions
+
+This architecture provides a solid foundation for continued development while maintaining clean, readable, and maintainable code. 

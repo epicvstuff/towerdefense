@@ -98,7 +98,8 @@ class UI:
         towers = [
             ('cannon', '1', 'Cannon'),
             ('machine_gun', '2', 'Machine Gun'),
-            ('missile', '3', 'Missile')
+            ('missile', '3', 'Missile'),
+            ('laser', '4', 'Laser')
         ]
         
         for tower_type, key, name in towers:
@@ -130,7 +131,7 @@ class UI:
         y_pos += 25
         
         controls = [
-            "1,2,3: Select Tower",
+            "1,2,3,4: Select Tower",
             "Click: Place Tower",
             "WASD/Arrows: Pan Camera",
             "P: Pause",

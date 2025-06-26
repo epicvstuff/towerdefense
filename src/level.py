@@ -55,9 +55,13 @@ class Camera:
 class Level:
     """Manages level data, pathfinding, and terrain"""
     
-    def __init__(self):
-        self.path_points = LEVEL_PATH
-        self.path_set = set(LEVEL_PATH)  # For fast lookup
+    def __init__(self, level_id: int = 1):
+        self.level_id = level_id
+        self.level_config = LEVELS[level_id]
+        self.name = self.level_config['name']
+        
+        self.path_points = self.level_config['path']
+        self.path_set = set(self.path_points)  # For fast lookup
         self.grid_width = 20  # Extended to fit full path
         self.grid_height = 15
         

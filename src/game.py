@@ -24,9 +24,10 @@ class Game:
     def __init__(self, screen: pygame.Surface):
         self.screen = screen
         self.state = GameState.MENU
+        self.current_level = 1  # Start with level 1
         
         # Initialize game systems
-        self.level = Level()
+        self.level = Level(self.current_level)
         self.tower_manager = TowerManager()
         self.enemy_manager = EnemyManager(self.level)
         self.ui = UI(screen)
@@ -42,10 +43,13 @@ class Game:
         self.wave_start_timer = 0.0
         self.wave_delay = 3.0  # Delay before first wave
         
+        # Get current level waves
+        self.waves = LEVELS[self.current_level]['waves']
+        
         # Initialize UI with starting values
         self.ui.update_gold(self.gold)
         self.ui.update_lives(self.lives)
-        self.ui.update_wave(self.current_wave + 1, len(WAVES))
+        self.ui.update_wave(self.current_wave + 1, len(self.waves))
     
     def handle_event(self, event: pygame.event.Event) -> None:
         """Handle input events"""
@@ -53,6 +57,10 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.start_game()
+                elif event.key == pygame.K_1:
+                    self.select_level(1)
+                elif event.key == pygame.K_2:
+                    self.select_level(2)
         
         elif self.state == GameState.PLAYING:
             if event.type == pygame.KEYDOWN:
@@ -64,6 +72,8 @@ class Game:
                     self.selected_tower_type = 'machine_gun'
                 elif event.key == pygame.K_3:
                     self.selected_tower_type = 'missile'
+                elif event.key == pygame.K_4:
+                    self.selected_tower_type = 'laser'
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left click
@@ -143,7 +153,7 @@ class Game:
         # Update UI
         self.ui.update_gold(self.gold)
         self.ui.update_lives(self.lives)
-        self.ui.update_wave(self.current_wave + 1, len(WAVES))
+        self.ui.update_wave(self.current_wave + 1, len(self.waves))
     
     def update(self, dt: float) -> None:
         """Update game state"""
@@ -155,7 +165,7 @@ class Game:
         self.level.update_camera(dt, keys_pressed)
         
         # Update wave timing
-        if not self.wave_in_progress and self.current_wave < len(WAVES):
+        if not self.wave_in_progress and self.current_wave < len(self.waves):
             self.wave_start_timer -= dt
             if self.wave_start_timer <= 0:
                 self.start_next_wave()
@@ -187,19 +197,19 @@ class Game:
             self.wave_start_timer = 3.0  # 3 second delay between waves
             
             # Check victory condition
-            if self.current_wave >= len(WAVES):
+            if self.current_wave >= len(self.waves):
                 self.state = GameState.VICTORY
     
     def start_next_wave(self) -> None:
         """Start the next wave of enemies"""
-        if self.current_wave < len(WAVES):
-            wave_config = WAVES[self.current_wave]
+        if self.current_wave < len(self.waves):
+            wave_config = self.waves[self.current_wave]
             self.enemy_manager.start_wave(wave_config)
             self.current_wave += 1
             self.wave_in_progress = True
             
             # Update UI
-            self.ui.update_wave(self.current_wave, len(WAVES))
+            self.ui.update_wave(self.current_wave, len(self.waves))
     
     def render(self) -> None:
         """Render the game"""
@@ -223,13 +233,27 @@ class Game:
         """Render the main menu"""
         font = pygame.font.Font(None, 72)
         title_text = font.render("Tower Defense", True, WHITE)
-        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
         self.screen.blit(title_text, title_rect)
         
+        # Current level display
+        font = pygame.font.Font(None, 48)
+        level_name = LEVELS[self.current_level]['name']
+        level_text = font.render(f"Level {self.current_level}: {level_name}", True, YELLOW)
+        level_rect = level_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 30))
+        self.screen.blit(level_text, level_rect)
+        
+        # Instructions
         font = pygame.font.Font(None, 36)
         start_text = font.render("Press SPACE to Start", True, WHITE)
-        start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+        start_rect = start_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 30))
         self.screen.blit(start_text, start_rect)
+        
+        # Level selection
+        font = pygame.font.Font(None, 24)
+        select_text = font.render("Press 1 for Forest Path, 2 for Mountain Pass", True, GRAY)
+        select_rect = select_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70))
+        self.screen.blit(select_text, select_rect)
     
     def render_game(self) -> None:
         """Render the main game view"""
@@ -314,4 +338,27 @@ class Game:
         font = pygame.font.Font(None, 36)
         restart_text = font.render("Press R to Play Again", True, WHITE)
         restart_rect = restart_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
-        self.screen.blit(restart_text, restart_rect) 
+        self.screen.blit(restart_text, restart_rect)
+    
+    def select_level(self, level_id: int) -> None:
+        """Select a different level"""
+        if level_id in LEVELS:
+            self.current_level = level_id
+            # Reinitialize level and enemy manager
+            self.level = Level(self.current_level)
+            self.enemy_manager = EnemyManager(self.level)
+            self.waves = LEVELS[self.current_level]['waves']
+            
+            # Reset game state for new level
+            self.tower_manager.clear_towers()
+            self.enemy_manager.clear_enemies()
+            self.gold = STARTING_GOLD
+            self.lives = STARTING_LIVES
+            self.current_wave = 0
+            self.wave_in_progress = False
+            self.wave_start_timer = self.wave_delay
+            
+            # Update UI
+            self.ui.update_gold(self.gold)
+            self.ui.update_lives(self.lives)
+            self.ui.update_wave(self.current_wave + 1, len(self.waves)) 
