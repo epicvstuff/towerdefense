@@ -28,6 +28,9 @@ ORANGE = (255, 165, 0)
 STARTING_GOLD = 100
 STARTING_LIVES = 20
 
+# Wave timing
+WAVE_FORCE_START_TIME = 45.0  # Force start next wave after 45 seconds
+
 # Tower specifications
 TOWER_TYPES = {
     'cannon': {
@@ -117,6 +120,23 @@ ENEMY_TYPES = {
         'size': 30,
         'armor': 10,
         'regeneration': 2  # Heals 2 HP per second
+    },
+    'elite': {
+        'health': 300,
+        'speed': 35,
+        'reward': 50,
+        'color': (255, 140, 0),  # Dark orange
+        'size': 22,
+        'armor': 3,
+        'flying': True,
+        'regeneration': 1  # Fast flying armored enemy
+    },
+    'swarm': {
+        'health': 15,
+        'speed': 80,
+        'reward': 3,
+        'color': (0, 255, 255),  # Cyan
+        'size': 8  # Very small, very fast, low health
     }
 }
 
@@ -178,6 +198,56 @@ LEVELS = {
             {"basic": 40, "fast": 35, "heavy": 30, "flying": 25, "armored": 15, "delay": 0.3},
             {"basic": 45, "fast": 40, "heavy": 35, "flying": 30, "armored": 20, "delay": 0.2},
             {"basic": 50, "fast": 45, "heavy": 40, "flying": 35, "armored": 25, "boss": 1, "delay": 0.2}  # Boss wave
+        ]
+    },
+    3: {
+        'name': 'Desert Canyon',
+        'path': [
+            # Start with zigzag across top
+            (0, 1), (1, 1), (2, 2), (3, 1), (4, 2), (5, 1),              # Zigzag top
+            (6, 2), (7, 1), (8, 2), (9, 3), (10, 2),                     # Continue zigzag
+            
+            # Curved descent to right side
+            (11, 3), (12, 4), (13, 5), (14, 6), (15, 7),                 # Smooth curve down
+            (16, 8), (17, 9), (18, 10), (19, 11),                        # Reach right edge
+            
+            # Wavy path down right edge
+            (19, 12), (18, 12), (19, 13), (18, 13), (19, 14),            # Wavy right edge
+            
+            # Curved bottom with waves
+            (18, 14), (17, 13), (16, 14), (15, 13), (14, 14),            # Wavy bottom start
+            (13, 13), (12, 14), (11, 13), (10, 14), (9, 13),             # Continue wavy bottom
+            (8, 14), (7, 13), (6, 14), (5, 13), (4, 14),                 # More wavy bottom
+            (3, 13), (2, 14), (1, 13), (0, 14),                          # Finish wavy bottom
+            
+            # Serpentine up left side
+            (0, 13), (1, 12), (0, 11), (1, 10), (0, 9),                  # Serpentine left
+            (1, 8), (0, 7), (1, 6), (0, 5), (1, 4),                      # Continue serpentine
+            (0, 3), (1, 3), (0, 2),                                      # Finish left side
+            
+            # Inner winding path
+            (1, 2), (2, 3), (3, 4), (4, 5), (5, 6),                      # Inner curve
+            (6, 7), (7, 8), (8, 9), (9, 10), (10, 11),                   # Continue inner
+            (11, 10), (12, 9), (13, 8), (14, 7), (15, 8),                # Inner zigzag
+            (16, 9), (17, 10), (18, 11), (17, 11), (16, 12),             # Final approach
+            (17, 13), (18, 12)                                           # Exit point
+        ],
+        'waves': [
+            # Wave 1-3: Swarm introduction
+            {"basic": 30, "fast": 20, "swarm": 15, "delay": 0.6},
+            {"basic": 35, "fast": 25, "heavy": 8, "swarm": 20, "delay": 0.5},
+            {"basic": 40, "fast": 30, "heavy": 12, "flying": 8, "swarm": 25, "delay": 0.5},
+            
+            # Wave 4-6: Elite enemies appear
+            {"basic": 30, "fast": 25, "heavy": 15, "flying": 12, "armored": 5, "elite": 2, "swarm": 20, "delay": 0.4},
+            {"basic": 35, "fast": 30, "heavy": 20, "flying": 15, "armored": 8, "elite": 4, "swarm": 25, "delay": 0.4},
+            {"basic": 40, "fast": 35, "heavy": 25, "flying": 20, "armored": 12, "elite": 6, "swarm": 30, "delay": 0.3},
+            
+            # Wave 7-10: Maximum chaos
+            {"basic": 45, "fast": 40, "heavy": 30, "flying": 25, "armored": 15, "elite": 8, "swarm": 35, "delay": 0.3},
+            {"basic": 50, "fast": 45, "heavy": 35, "flying": 30, "armored": 20, "elite": 10, "swarm": 40, "delay": 0.2},
+            {"basic": 55, "fast": 50, "heavy": 40, "flying": 35, "armored": 25, "elite": 12, "swarm": 45, "boss": 1, "delay": 0.2},
+            {"basic": 60, "fast": 55, "heavy": 45, "flying": 40, "armored": 30, "elite": 15, "swarm": 50, "boss": 2, "delay": 0.1}  # Ultimate challenge
         ]
     }
 }

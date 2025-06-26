@@ -61,11 +61,17 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 - **Waves**: 10 waves introducing all basic mechanics
 - **Focus**: Learning tower placement and basic strategy
 
-### Level 2: Mountain Pass ⚡ NEW!
+### Level 2: Mountain Pass ⚡
 - **Difficulty**: Advanced challenge
 - **Path**: Complex zigzag mountain trail
 - **Waves**: 10 waves with armored enemies and boss fights
 - **Focus**: Advanced tactics and resource management
+
+### Level 3: Desert Canyon ⚡ NEW!
+- **Difficulty**: Expert challenge  
+- **Path**: Serpentine winding canyon path with multiple curves
+- **Waves**: 10 waves featuring swarm enemies and elite units
+- **Focus**: Fast-paced action with overlapping wave mechanics
 
 ## 🎯 Controls
 
@@ -73,11 +79,14 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 - **SPACE**: Start selected level
 - **1**: Select Level 1 (Forest Path)
 - **2**: Select Level 2 (Mountain Pass)
+- **3**: Select Level 3 (Desert Canyon)
 
 ### Gameplay Controls
 - **1, 2, 3, 4**: Select tower type (Cannon, Machine Gun, Missile, Laser)
 - **Left Click**: Place selected tower
 - **WASD / Arrow Keys**: Pan camera around the level
+- **N**: Skip to next wave immediately
+- **Start Next Wave Button**: Click to skip waiting time between waves
 - **P**: Pause/unpause game
 - **R**: Restart game (when game over)
 
@@ -104,6 +113,20 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
    python main.py
    ```
 
+## 🌊 Wave Mechanics
+
+### Overlapping Waves System ⚡ NEW!
+- **Force Timer**: After 45 seconds, the next wave automatically starts even if enemies remain
+- **Visual Countdown**: Watch the timer to prepare for incoming waves
+- **Strategic Skipping**: Use the "Start Next Wave" button to control pacing
+- **Multiple Active Waves**: Handle multiple enemy types simultaneously for increased challenge
+
+### Wave Controls
+- **Automatic**: Waves start after 3 seconds when previous wave is cleared
+- **Force Start**: Waves auto-start after 45 seconds regardless of remaining enemies  
+- **Manual Skip**: Press 'N' or click "Start Next Wave" button to skip waiting time
+- **Strategic Timing**: Choose when to face multiple waves for optimal resource management
+
 ## 🎪 Gameplay Tips
 
 ### Strategic Basics
@@ -128,6 +151,12 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 **Mountain Pass (Level 2)**:
 - Armored enemies appear early - prioritize Laser towers
 - The zigzag sections provide excellent chokepoints
+
+**Desert Canyon (Level 3)**:
+- Overlapping waves create intense pressure - use the Skip Wave feature strategically
+- Swarm enemies require high-rate towers like Machine Guns and Lasers  
+- Elite flying enemies need missile and laser coverage
+- Watch the force timer - plan your builds for incoming waves
 - Boss enemy regenerates - focus fire with multiple towers
 
 ## 🏗️ Technical Details
@@ -175,6 +204,25 @@ game/
 - **Enhanced Graphics**: Improved sprites and animations
 - **Sound Polish**: Complete audio implementation
 - **Tutorial System**: Interactive learning experience
+
+## 📝 Recent Updates
+
+### v2.1.0 - Combat Balance & UI Improvements
+- **Fixed**: Flying enemies now properly immune to splash damage
+- **Fixed**: Skip wave button now always visible when waves remain
+- **Fixed**: Timer and button display simultaneously for better UX
+- **Improved**: Desert Canyon level path redesigned with no visual intersections
+- **Enhanced**: All tower and enemy special abilities verified and working correctly
+- **Added**: Comprehensive feature testing and balance verification
+
+### v2.0.0 - Major Content Update
+- **Added**: Desert Canyon (Level 3) with expert-level serpentine path
+- **Added**: Overlapping wave system with 45-second force timer
+- **Added**: Manual wave skip button and keyboard shortcut (N key)
+- **Added**: Visual countdown timers with color-coded warnings
+- **Added**: Swarm and Elite enemy types with unique mechanics
+- **Enhanced**: Interactive UI with clickable wave management
+- **Improved**: Strategic depth with multiple difficulty levels
 
 ---
 

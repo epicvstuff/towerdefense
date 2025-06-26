@@ -91,6 +91,10 @@ class Projectile:
         if self.splash_radius > 0:
             for enemy in all_enemies:
                 if enemy != primary_enemy and enemy.is_alive:
+                    # Flying enemies are immune to splash damage
+                    if enemy.flying:
+                        continue
+                        
                     distance = math.sqrt((self.x - enemy.x) ** 2 + (self.y - enemy.y) ** 2)
                     if distance <= self.splash_radius:
                         # Reduce splash damage based on distance

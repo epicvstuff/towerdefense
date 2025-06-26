@@ -285,30 +285,36 @@ Flying Unit:
 - [ ] Interactive tutorial system for new players
 - [ ] Improved visual effects and particle systems
 
-### Current Status: 🎉 PHASE 2 COMPLETE
-**Achievement Unlocked:** Enhanced tower defense with multiple levels and advanced enemies!
+### Current Status: 🎉 PHASE 2+ COMPLETE
+**Achievement Unlocked:** Enhanced tower defense with advanced wave mechanics and expert-level content!
 
 **Major Features Added:**
-- **Mountain Pass Level**: Complex path with strategic chokepoints
-- **Laser Tower**: High-rate piercing weapon for crowd control
-- **Armored Enemies**: Damage reduction creates tactical depth
-- **Boss Enemies**: Regenerating super-units requiring focus fire
-- **Level Selection**: Menu system for choosing difficulty
+- **Desert Canyon Level**: Expert-difficulty serpentine path with complex curves
+- **Overlapping Wave System**: 45-second force timer creates multiple simultaneous waves
+- **Manual Wave Control**: Skip wave button and keyboard shortcut (N key)
+- **Visual Wave Timer**: Real-time countdown with color-coded warnings
+- **Advanced Enemy Types**: Swarm and Elite enemies with unique mechanics
+- **Interactive UI**: Clickable buttons with strategic timing elements
+- **Level Selection**: Menu system expanded to three difficulty levels
 
 **Game Balance Improvements:**
-- **Progressive Difficulty**: Level 1 teaches, Level 2 challenges
+- **Progressive Difficulty**: Level 1 teaches, Level 2 challenges, Level 3 masters
 - **Tower Specialization**: Each tower has clear role and counters
-- **Economic Scaling**: Rewards match increased challenge
+- **Economic Scaling**: Rewards match increased challenge  
 - **Strategic Depth**: Multiple viable strategies per level
+- **Time Pressure**: Force timer prevents turtle strategies
+- **Tactical Decisions**: Wave skipping creates risk/reward choices
 
 ### Success Metrics: ✅ ALL ACHIEVED
-- [x] Game completable from start to finish (both levels)
+- [x] Game completable from start to finish (all three levels)
 - [x] 15-25 minutes of engaging gameplay per level
 - [x] Balanced challenge progression across difficulty levels
 - [x] Smooth performance (60 FPS maintained)
 - [x] Clear win/lose feedback with level-specific content
 - [x] Strategic depth with multiple tower combinations
 - [x] Replayability through level selection and different strategies
+- [x] Interactive wave management with meaningful player choices
+- [x] Visual feedback systems for enhanced user experience
 
 ---
 
@@ -345,11 +351,20 @@ game/
 ### System Architecture
 ```
 Game Manager (game.py)
-├── Level Manager (level.py)         # Path & grid management
+├── Level Manager (level.py)         # Path & grid management + camera system
 ├── Tower Manager (tower.py)         # Tower placement & combat
 ├── Enemy Manager (enemy.py)         # Enemy spawning & movement
-├── UI Manager (ui.py)              # Interface & user input
-└── Audio Manager (audio.py)        # Sound effects & music [Day 7]
+├── UI Manager (ui.py)              # Interface, user input & interactive buttons
+└── Audio Manager (audio.py)        # Sound effects & music [Phase 3]
+```
+
+### New Wave Management System
+```
+Wave Timing Flow:
+├── Normal: 3s delay → Next wave starts
+├── Force Timer: 45s → Auto-start next wave
+├── Manual Skip: Button/Key → Immediate start
+└── UI Feedback: Visual countdown with warnings
 ```
 
 ### Data Flow
@@ -361,6 +376,24 @@ main.py → Game.update() → {
     └── Game.check_conditions()      # Win/lose/wave logic
 }
 ```
+
+### Enhanced Controls Summary
+**Keyboard:**
+- WASD/Arrows: Camera panning
+- 1-4: Tower selection  
+- N: Skip to next wave
+- P: Pause/unpause
+- R: Restart
+
+**Mouse:**
+- Left Click: Place tower (in game area) or click UI buttons
+- "Start Next Wave" button: Skip waiting between waves
+- Tower selection buttons: Visual tower picker
+
+**UI Features:**
+- Visual countdown timer with color warnings
+- Interactive skip wave button
+- Real-time force timer display
 
 ### Coding Standards
 - Use type hints for all function parameters and returns

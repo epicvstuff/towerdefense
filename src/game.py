@@ -42,6 +42,7 @@ class Game:
         # Timing
         self.wave_start_timer = 0.0
         self.wave_delay = 3.0  # Delay before first wave
+        self.wave_force_timer = 0.0  # Timer to force start next wave
         
         # Get current level waves
         self.waves = LEVELS[self.current_level]['waves']
@@ -61,6 +62,8 @@ class Game:
                     self.select_level(1)
                 elif event.key == pygame.K_2:
                     self.select_level(2)
+                elif event.key == pygame.K_3:
+                    self.select_level(3)
         
         elif self.state == GameState.PLAYING:
             if event.type == pygame.KEYDOWN:
@@ -74,13 +77,17 @@ class Game:
                     self.selected_tower_type = 'missile'
                 elif event.key == pygame.K_4:
                     self.selected_tower_type = 'laser'
+                elif event.key == pygame.K_n:  # 'N' for next wave
+                    self.skip_to_next_wave()
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left click
-                    self.handle_mouse_click(event.pos)
-            
-            # Let UI handle events too
-            self.ui.handle_event(event)
+                    # Check UI events first
+                    ui_action = self.ui.handle_event(event)
+                    if ui_action == "skip_wave":
+                        self.skip_to_next_wave()
+                    else:
+                        self.handle_mouse_click(event.pos)
         
         elif self.state == GameState.PAUSED:
             if event.type == pygame.KEYDOWN:
@@ -148,6 +155,7 @@ class Game:
         self.current_wave = 0
         self.wave_in_progress = False
         self.wave_start_timer = self.wave_delay
+        self.wave_force_timer = 0.0
         self.state = GameState.PLAYING
         
         # Update UI
@@ -169,6 +177,23 @@ class Game:
             self.wave_start_timer -= dt
             if self.wave_start_timer <= 0:
                 self.start_next_wave()
+        
+        # Update force start timer for current wave
+        if self.wave_in_progress:
+            self.wave_force_timer += dt
+            # Update UI with force timer
+            self.ui.update_wave_force_timer(self.wave_force_timer)
+            # Force start next wave if too much time has passed
+            if self.wave_force_timer >= WAVE_FORCE_START_TIME and self.current_wave < len(self.waves):
+                self.wave_start_timer = 0.0  # Start next wave immediately
+                self.wave_in_progress = False  # Allow next wave to start
+        else:
+            # Reset UI force timer when no wave in progress
+            self.ui.update_wave_force_timer(0.0)
+        
+        # Update UI wave status and timers
+        self.ui.update_wave_status(self.wave_in_progress)
+        self.ui.update_wave_start_timer(self.wave_start_timer)
         
         # Update game systems
         self.enemy_manager.update(dt)
@@ -195,6 +220,7 @@ class Game:
         if self.wave_in_progress and not self.enemy_manager.has_enemies() and not self.enemy_manager.is_spawning():
             self.wave_in_progress = False
             self.wave_start_timer = 3.0  # 3 second delay between waves
+            self.wave_force_timer = 0.0  # Reset force timer
             
             # Check victory condition
             if self.current_wave >= len(self.waves):
@@ -207,9 +233,22 @@ class Game:
             self.enemy_manager.start_wave(wave_config)
             self.current_wave += 1
             self.wave_in_progress = True
+            self.wave_force_timer = 0.0  # Reset force timer for new wave
             
             # Update UI
             self.ui.update_wave(self.current_wave, len(self.waves))
+    
+    def skip_to_next_wave(self) -> None:
+        """Skip to the next wave immediately"""
+        # Allow skipping whenever more waves exist
+        if self.current_wave < len(self.waves):
+            if self.wave_in_progress:
+                # During active wave: force start next wave (overlapping)
+                self.start_next_wave()
+            else:
+                # Between waves: skip waiting timer
+                self.wave_start_timer = 0.0
+                self.start_next_wave()
     
     def render(self) -> None:
         """Render the game"""
@@ -251,7 +290,7 @@ class Game:
         
         # Level selection
         font = pygame.font.Font(None, 24)
-        select_text = font.render("Press 1 for Forest Path, 2 for Mountain Pass", True, GRAY)
+        select_text = font.render("Press 1 for Forest Path, 2 for Mountain Pass, 3 for Desert Canyon", True, GRAY)
         select_rect = select_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70))
         self.screen.blit(select_text, select_rect)
     

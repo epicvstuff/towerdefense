@@ -9,11 +9,13 @@
 - Integration & polish (UI, camera system, balance)
 
 ### ✅ Phase 2: Enhanced Content & Variety (COMPLETED)
-- **2 Unique Levels**: Forest Path (beginner) and Mountain Pass (advanced)
+- **3 Unique Levels**: Forest Path (beginner), Mountain Pass (advanced), Desert Canyon (expert)
 - **New Tower Type**: Laser Tower with piercing capability
-- **Advanced Enemies**: Armored units and regenerating boss enemies
-- **Enhanced Gameplay**: 20 total waves across both levels
+- **Advanced Enemies**: Armored units, regenerating boss enemies, swarm and elite units
+- **Enhanced Gameplay**: 30 total waves across three levels
 - **Level Selection**: Menu system for choosing levels
+- **Overlapping Waves**: Force timer and manual skip mechanics
+- **Interactive UI**: Skip wave button and visual countdown timer
 
 ### 🔮 Phase 3: Polish & Features (PLANNED)
 - Speed controls and enhanced UI
@@ -57,8 +59,10 @@ main.py → Game.update() → {
 #### User Interface (`src/ui.py`)
 - **Game Statistics**: Gold, lives, wave progress
 - **Tower Selection**: Visual buttons with costs and descriptions
+- **Wave Controls**: Skip wave button and force timer display
 - **Control Instructions**: Comprehensive help system
 - **Level Information**: Current level display
+- **Interactive Elements**: Clickable UI buttons with hover feedback
 
 ## 📊 Data Architecture
 
@@ -109,17 +113,21 @@ ENEMY_TYPES = {
 3. **Instructions**: Clear control explanations
 
 ### Gameplay Loop
-1. **Wave Preparation**: 3-second delay between waves
+1. **Wave Preparation**: 3-second delay between waves (skippable)
 2. **Enemy Spawning**: Configurable compositions and timing
 3. **Tower Combat**: Real-time targeting and projectile physics
 4. **Resource Management**: Gold earned from kills
-5. **Victory/Defeat**: Wave completion or life depletion
+5. **Wave Management**: Force timer creates overlapping waves after 45 seconds
+6. **Victory/Defeat**: Wave completion or life depletion
 
 ### Advanced Features
 - **Camera Panning**: Explore full level layouts
 - **Piercing Projectiles**: Laser towers hit multiple enemies
 - **Armor System**: Damage reduction mechanics
 - **Boss Regeneration**: Healing over time challenges
+- **Overlapping Waves**: Multiple active waves with force timer system
+- **Manual Wave Control**: Player-initiated wave skipping
+- **Visual Feedback**: Real-time countdown and warning systems
 
 ## 🔧 Technical Implementation
 
@@ -200,5 +208,23 @@ game/
 - **New Towers**: Plug-and-play tower type system
 - **New Enemies**: Flexible enemy property system
 - **New Mechanics**: Event-driven architecture supports additions
+
+## 📝 Recent Improvements (v2.1.0)
+
+### Combat System Fixes
+- **Flying Splash Immunity**: Flying enemies now properly immune to splash damage
+- **Feature Verification**: All tower and enemy special abilities tested and confirmed working
+- **Balance Validation**: Comprehensive testing of armor, regeneration, homing, and piercing mechanics
+
+### UI/UX Enhancements  
+- **Skip Wave Button**: Always visible when waves remain, works during active waves
+- **Timer Display**: Both countdown timer and skip button visible simultaneously
+- **Visual Feedback**: Improved button positioning and color coding
+- **Path Optimization**: Desert Canyon level redesigned with no visual intersections
+
+### Code Quality
+- **Debug Cleanup**: Removed debug print statements for cleaner output
+- **Documentation Updates**: README and PROJECT_STRUCTURE updated with latest features
+- **Testing Framework**: Added comprehensive feature verification system
 
 This architecture provides a solid foundation for continued development while maintaining clean, readable, and maintainable code. 

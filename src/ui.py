@@ -19,6 +19,10 @@ class UI:
         self.lives = 0
         self.current_wave = 1
         self.total_waves = 10
+        self.wave_force_timer = 0.0
+        self.wave_force_max_time = 45.0
+        self.wave_in_progress = False
+        self.wave_start_timer = 0.0
         
         # UI panel area
         self.panel_rect = pygame.Rect(GAME_AREA_WIDTH, 0, UI_PANEL_WIDTH, SCREEN_HEIGHT)
@@ -36,10 +40,45 @@ class UI:
         self.current_wave = current_wave
         self.total_waves = total_waves
     
-    def handle_event(self, event: pygame.event.Event) -> None:
+    def update_wave_force_timer(self, force_timer: float) -> None:
+        """Update wave force timer display"""
+        self.wave_force_timer = force_timer
+    
+    def update_wave_status(self, wave_in_progress: bool) -> None:
+        """Update wave status for UI decisions"""
+        self.wave_in_progress = wave_in_progress
+    
+    def update_wave_start_timer(self, start_timer: float) -> None:
+        """Update wave start timer for skip button logic"""
+        self.wave_start_timer = start_timer
+    
+    def handle_event(self, event: pygame.event.Event) -> Optional[str]:
         """Handle UI-specific events"""
-        # For future use (clicking UI buttons, etc.)
-        pass
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  # Left click
+                return self._handle_click(event.pos)
+        return None
+    
+    def _handle_click(self, pos: tuple) -> Optional[str]:
+        """Handle mouse clicks on UI elements"""
+        mouse_x, mouse_y = pos
+        
+        # Check skip wave button
+        skip_button_rect = self._get_skip_button_rect()
+        if skip_button_rect and skip_button_rect.collidepoint(mouse_x, mouse_y):
+            return "skip_wave"
+        
+        return None
+    
+    def _get_skip_button_rect(self) -> Optional[pygame.Rect]:
+        """Get skip wave button rectangle if it should be shown"""
+        # Show button whenever more waves are available
+        if self.current_wave < self.total_waves:
+            # Button position below timer (if present) or below wave info
+            x = GAME_AREA_WIDTH + 10
+            y = 180  # Below stats and timer section
+            return pygame.Rect(x, y, 170, 30)
+        return None
     
     def render(self) -> None:
         """Render the UI"""
@@ -57,7 +96,7 @@ class UI:
         
         # Game stats
         self._draw_stats(y_pos)
-        y_pos += 120
+        y_pos += 180  # Extra space for timer and button display
         
         # Tower selection
         self._draw_tower_selection(y_pos)
@@ -84,6 +123,39 @@ class UI:
         # Wave
         wave_text = self.font.render(f"Wave: {self.current_wave}/{self.total_waves}", True, WHITE)
         self.screen.blit(wave_text, (x_pos, y_pos))
+        y_pos += 30
+        
+        # Show timer based on game state
+        if self.wave_in_progress and self.wave_force_timer > 0:
+            # During active wave: show force timer countdown
+            time_remaining = max(0, self.wave_force_max_time - self.wave_force_timer)
+            if time_remaining <= 10:  # Warning when less than 10 seconds
+                timer_color = RED
+                timer_text = self.small_font.render(f"Next wave in: {time_remaining:.1f}s", True, timer_color)
+            else:
+                timer_color = YELLOW
+                timer_text = self.small_font.render(f"Next wave in: {time_remaining:.1f}s", True, timer_color)
+            self.screen.blit(timer_text, (x_pos, y_pos))
+        elif not self.wave_in_progress and self.wave_start_timer > 0:
+            # Between waves: show waiting timer
+            timer_text = self.small_font.render(f"Next wave starts in: {self.wave_start_timer:.1f}s", True, WHITE)
+            self.screen.blit(timer_text, (x_pos, y_pos))
+        
+        # Draw skip wave button
+        self._draw_skip_button()
+    
+    def _draw_skip_button(self) -> None:
+        """Draw skip to next wave button"""
+        button_rect = self._get_skip_button_rect()
+        if button_rect:
+            # Button background
+            pygame.draw.rect(self.screen, (0, 150, 0), button_rect)  # Brighter green
+            pygame.draw.rect(self.screen, WHITE, button_rect, 2)
+            
+            # Button text
+            button_text = self.small_font.render("Start Next Wave", True, WHITE)
+            text_rect = button_text.get_rect(center=button_rect.center)
+            self.screen.blit(button_text, text_rect)
     
     def _draw_tower_selection(self, y_pos: int) -> None:
         """Draw tower selection panel"""
