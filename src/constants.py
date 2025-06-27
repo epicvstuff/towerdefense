@@ -31,6 +31,25 @@ STARTING_LIVES = 20
 # Wave timing
 WAVE_FORCE_START_TIME = 45.0  # Force start next wave after 45 seconds
 
+# Tower upgrade system
+MAX_UPGRADE_LEVEL = 3  # Maximum upgrade level for towers
+
+# Upgrade costs (cost for each upgrade level)
+UPGRADE_COSTS = {
+    'cannon': [15, 25, 40],      # Level 1, 2, 3 upgrade costs
+    'machine_gun': [20, 35, 50],
+    'missile': [30, 50, 75],
+    'laser': [40, 65, 90]
+}
+
+# Upgrade multipliers for each stat per level
+UPGRADE_MULTIPLIERS = {
+    'damage': [1.3, 1.6, 2.0],       # 30%, 60%, 100% damage increase
+    'range': [1.2, 1.4, 1.6],        # 20%, 40%, 60% range increase  
+    'fire_rate': [1.25, 1.5, 1.8],   # 25%, 50%, 80% fire rate increase
+    'splash_radius': [1.2, 1.4, 1.6] # 20%, 40%, 60% splash radius increase
+}
+
 # Tower specifications
 TOWER_TYPES = {
     'cannon': {

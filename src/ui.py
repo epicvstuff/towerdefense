@@ -5,6 +5,7 @@ User interface system
 import pygame  # type: ignore
 from typing import Dict, Optional
 from .constants import *
+from .sprite_manager import sprite_manager
 
 class UI:
     """User interface manager"""
@@ -100,7 +101,7 @@ class UI:
         
         # Tower selection
         self._draw_tower_selection(y_pos)
-        y_pos += 200
+        y_pos += 210  # Proper spacing (4 towers × 45px + 30px title + 20px buffer)
         
         # Controls help
         self._draw_controls(y_pos)
@@ -176,23 +177,90 @@ class UI:
         
         for tower_type, key, name in towers:
             self._draw_tower_button(x_pos, y_pos, tower_type, key, name)
-            y_pos += 50
+            y_pos += 45  # Reduced spacing between tower buttons
     
     def _draw_tower_button(self, x: int, y: int, tower_type: str, key: str, name: str) -> None:
         """Draw a tower selection button"""
         stats = TOWER_TYPES[tower_type]
         
         # Button background
-        button_rect = pygame.Rect(x, y, 170, 40)
+        button_rect = pygame.Rect(x, y, 170, 35)  # Slightly shorter buttons
         pygame.draw.rect(self.screen, stats['color'], button_rect)
         pygame.draw.rect(self.screen, WHITE, button_rect, 1)
+        
+        # Tower sprite icon
+        tower_sprite = sprite_manager.get_tower_sprite(tower_type)
+        if tower_sprite:
+            # Scale sprite to fit button
+            scaled_sprite = pygame.transform.scale(tower_sprite, (25, 25))  # Slightly smaller sprite
+            sprite_rect = scaled_sprite.get_rect(center=(x + 17, y + 17))  # Adjusted center
+            self.screen.blit(scaled_sprite, sprite_rect)
         
         # Tower info
         name_text = self.small_font.render(f"{key}. {name}", True, WHITE)
         cost_text = self.small_font.render(f"Cost: {stats['cost']}", True, WHITE)
         
-        self.screen.blit(name_text, (x + 5, y + 5))
-        self.screen.blit(cost_text, (x + 5, y + 20))
+        self.screen.blit(name_text, (x + 35, y + 5))   # Adjusted for smaller sprite
+        self.screen.blit(cost_text, (x + 35, y + 18))  # Adjusted for shorter button
+    
+    def render_tower_info(self, tower, mouse_pos: tuple) -> None:
+        """Render tower information popup near mouse"""
+        if not tower:
+            return
+        
+        mouse_x, mouse_y = mouse_pos
+        
+        # Create info panel
+        info_lines = [
+            f"{tower.tower_type.title()} Tower",
+            f"Level: {tower.upgrade_level + 1}",
+            f"Damage: {tower.damage}",
+            f"Range: {tower.range}",
+            f"Fire Rate: {tower.fire_rate:.1f}/s"
+        ]
+        
+        if tower.splash_radius > 0:
+            info_lines.append(f"Splash: {tower.splash_radius}")
+        
+        # Add upgrade info if possible
+        if tower.can_upgrade():
+            cost = tower.get_upgrade_cost()
+            next_stats = tower.get_stats_preview(tower.upgrade_level + 1)
+            info_lines.append("")
+            info_lines.append(f"Upgrade Cost: {cost}")
+            info_lines.append(f"Next Damage: {next_stats['damage']}")
+            info_lines.append(f"Next Range: {next_stats['range']}")
+        else:
+            info_lines.append("")
+            info_lines.append("MAX LEVEL")
+        
+        # Calculate panel size
+        line_height = 18
+        panel_width = 160
+        panel_height = len(info_lines) * line_height + 10
+        
+        # Position panel near mouse but keep on screen
+        panel_x = min(mouse_x + 10, SCREEN_WIDTH - panel_width - 10)
+        panel_y = max(mouse_y - panel_height - 10, 10)
+        
+        # Draw panel background
+        panel_rect = pygame.Rect(panel_x, panel_y, panel_width, panel_height)
+        pygame.draw.rect(self.screen, (40, 40, 40), panel_rect)
+        pygame.draw.rect(self.screen, WHITE, panel_rect, 2)
+        
+        # Draw text
+        for i, line in enumerate(info_lines):
+            if line:  # Skip empty lines
+                text_color = WHITE
+                if "Upgrade Cost" in line:
+                    text_color = YELLOW
+                elif "MAX LEVEL" in line:
+                    text_color = RED
+                elif "Next" in line:
+                    text_color = GREEN
+                
+                text = self.small_font.render(line, True, text_color)
+                self.screen.blit(text, (panel_x + 5, panel_y + 5 + i * line_height))
     
     def _draw_controls(self, y_pos: int) -> None:
         """Draw control instructions"""
@@ -204,7 +272,8 @@ class UI:
         
         controls = [
             "1,2,3,4: Select Tower",
-            "Click: Place Tower",
+            "Click: Place/Upgrade Tower",
+            "Hover: Show Tower Info",
             "WASD/Arrows: Pan Camera",
             "P: Pause",
             "R: Restart (Game Over)"

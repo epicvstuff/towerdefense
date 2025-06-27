@@ -100,7 +100,7 @@ class Game:
                     self.restart_game()
     
     def handle_mouse_click(self, pos: tuple) -> None:
-        """Handle mouse clicks for tower placement"""
+        """Handle mouse clicks for tower placement and upgrades"""
         mouse_x, mouse_y = pos
         
         # Check if click is in game area (not UI panel)
@@ -112,8 +112,15 @@ class Game:
             grid_x = int(world_x // GRID_SIZE)
             grid_y = int(world_y // GRID_SIZE)
             
-            # Try to place tower
-            self.try_place_tower(grid_x, grid_y)
+            # Check if there's already a tower at this position
+            existing_tower = self.tower_manager.get_tower_at(grid_x, grid_y)
+            
+            if existing_tower:
+                # Try to upgrade existing tower
+                self.try_upgrade_tower(existing_tower)
+            else:
+                # Try to place new tower
+                self.try_place_tower(grid_x, grid_y)
     
     def try_place_tower(self, grid_x: int, grid_y: int) -> bool:
         """Attempt to place a tower at the specified grid position"""
@@ -133,6 +140,25 @@ class Game:
         # Place the tower
         if self.tower_manager.place_tower(self.selected_tower_type, grid_x, grid_y):
             self.gold -= tower_cost
+            self.ui.update_gold(self.gold)
+            return True
+        
+        return False
+    
+    def try_upgrade_tower(self, tower) -> bool:
+        """Attempt to upgrade the specified tower"""
+        if not tower.can_upgrade():
+            return False
+        
+        upgrade_cost = tower.get_upgrade_cost()
+        
+        # Check if we have enough gold
+        if self.gold < upgrade_cost:
+            return False
+        
+        # Upgrade the tower
+        if tower.upgrade():
+            self.gold -= upgrade_cost
             self.ui.update_gold(self.gold)
             return True
         
@@ -310,6 +336,9 @@ class Game:
         
         # Show selected tower type
         self.render_selected_tower_preview()
+        
+        # Show tower info on hover
+        self.render_tower_hover_info()
     
     def render_selected_tower_preview(self) -> None:
         """Show tower range preview at mouse position"""
@@ -332,6 +361,35 @@ class Game:
             if -100 <= center_screen_x <= GAME_AREA_WIDTH + 100 and -100 <= center_screen_y <= SCREEN_HEIGHT + 100:
                 tower_range = TOWER_TYPES[self.selected_tower_type]['range']
                 pygame.draw.circle(self.screen, WHITE, (int(center_screen_x), int(center_screen_y)), tower_range, 1)
+    
+    def render_tower_hover_info(self) -> None:
+        """Show tower information when hovering over towers"""
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_x, mouse_y = mouse_pos
+        
+        # Only show info in game area
+        if mouse_x >= GAME_AREA_WIDTH:
+            return
+        
+        # Convert mouse position to grid coordinates
+        world_x, world_y = self.level.screen_to_world(mouse_x, mouse_y)
+        grid_x = int(world_x // GRID_SIZE)
+        grid_y = int(world_y // GRID_SIZE)
+        
+        # Check if there's a tower at this position
+        tower = self.tower_manager.get_tower_at(grid_x, grid_y)
+        
+        if tower:
+            # Show tower range circle using the tower's actual current range
+            tower_screen_x, tower_screen_y = self.level.world_to_screen(tower.x, tower.y)
+            
+            # Only draw range circle if tower is visible
+            if -100 <= tower_screen_x <= GAME_AREA_WIDTH + 100 and -100 <= tower_screen_y <= SCREEN_HEIGHT + 100:
+                # Use the tower's actual current range (which includes upgrades)
+                pygame.draw.circle(self.screen, YELLOW, (int(tower_screen_x), int(tower_screen_y)), tower.range, 2)
+            
+            # Show tower info popup
+            self.ui.render_tower_info(tower, mouse_pos)
     
     def render_pause_overlay(self) -> None:
         """Render pause overlay"""

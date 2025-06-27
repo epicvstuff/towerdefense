@@ -38,6 +38,26 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
    - Fire Rate: 10 shots/sec
    - Special: Piercing shots, targets flying enemies
 
+### Tower Upgrade System ⚡ NEW!
+Each tower can be upgraded up to 3 times by clicking on existing towers:
+
+**Upgrade Benefits:**
+- **Damage**: +30% → +60% → +100% per level
+- **Range**: +20% → +40% → +60% per level  
+- **Fire Rate**: +25% → +50% → +80% per level
+- **Splash Radius**: +20% → +40% → +60% per level (splash towers)
+
+**Upgrade Costs:**
+- **Cannon**: 15 → 25 → 40 gold per level
+- **Machine Gun**: 20 → 35 → 50 gold per level
+- **Missile**: 30 → 50 → 75 gold per level
+- **Laser**: 40 → 65 → 90 gold per level
+
+**Visual Indicators:**
+- Colored dots above towers show upgrade level
+- Yellow (Level 1) → Orange (Level 2) → Red (Level 3)
+- Hover over towers to see detailed stats and upgrade preview
+
 ## 👾 Enemy Types
 
 ### Basic Enemies
@@ -83,7 +103,8 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 
 ### Gameplay Controls
 - **1, 2, 3, 4**: Select tower type (Cannon, Machine Gun, Missile, Laser)
-- **Left Click**: Place selected tower
+- **Left Click**: Place selected tower OR upgrade existing tower
+- **Hover**: Show detailed tower information and stats
 - **WASD / Arrow Keys**: Pan camera around the level
 - **N**: Skip to next wave immediately
 - **Start Next Wave Button**: Click to skip waiting time between waves
@@ -140,6 +161,9 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 - **Mixed Defense**: Combine different tower types for versatility
 - **Camera Usage**: Pan around to find optimal tower positions
 - **Resource Management**: Balance immediate needs vs. long-term upgrades
+- **Strategic Upgrading**: Focus upgrades on well-positioned towers for maximum impact
+- **Tower Information**: Hover over towers to see stats and plan upgrades
+- **Upgrade Timing**: Early game focuses on placement, late game on upgrades
 
 ### Level-Specific Tips
 
@@ -206,6 +230,16 @@ game/
 - **Tutorial System**: Interactive learning experience
 
 ## 📝 Recent Updates
+
+### v2.2.0 - Tower Upgrade System ⚡ NEW!
+- **Added**: Complete tower upgrade system with 3 upgrade levels per tower
+- **Added**: Progressive upgrade costs and multiplicative stat bonuses
+- **Added**: Visual upgrade indicators with colored dots above towers
+- **Added**: Interactive tower information on hover with upgrade previews
+- **Added**: Dynamic range circles that update with tower upgrades
+- **Enhanced**: Click existing towers to upgrade them with sufficient gold
+- **Improved**: UI layout optimization to prevent text overlap
+- **Added**: Strategic depth with upgrade vs. placement decisions
 
 ### v2.1.0 - Combat Balance & UI Improvements
 - **Fixed**: Flying enemies now properly immune to splash damage

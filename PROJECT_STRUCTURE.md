@@ -48,7 +48,10 @@ main.py → Game.update() → {
 - **4 Tower Types**: Cannon, Machine Gun, Missile, Laser
 - **Projectile Physics**: Homing, splash damage, piercing
 - **Targeting System**: Closest enemy priority with flying detection
-- **Range Visualization**: Mouse hover preview
+- **Range Visualization**: Mouse hover preview with upgraded ranges
+- **Upgrade System**: 3-level progressive upgrades with multiplicative bonuses
+- **Visual Indicators**: Colored upgrade level dots above towers
+- **Interactive Info**: Hover tooltips with current and next-level stats
 
 #### Enemy System (`src/enemy.py`)
 - **6 Enemy Types**: Basic, Fast, Heavy, Flying, Armored, Boss
@@ -91,6 +94,21 @@ TOWER_TYPES = {
     }
 }
 
+# Tower upgrade system
+UPGRADE_COSTS = {
+    'cannon': [15, 25, 40],      # Progressive costs per level
+    'machine_gun': [20, 35, 50],
+    'missile': [30, 50, 75],
+    'laser': [40, 65, 90]
+}
+
+UPGRADE_MULTIPLIERS = {
+    'damage': [1.3, 1.6, 2.0],       # Multiplicative bonuses
+    'range': [1.2, 1.4, 1.6],
+    'fire_rate': [1.25, 1.5, 1.8],
+    'splash_radius': [1.2, 1.4, 1.6]
+}
+
 ENEMY_TYPES = {
     'armored': {
         'health': 200,
@@ -116,9 +134,10 @@ ENEMY_TYPES = {
 1. **Wave Preparation**: 3-second delay between waves (skippable)
 2. **Enemy Spawning**: Configurable compositions and timing
 3. **Tower Combat**: Real-time targeting and projectile physics
-4. **Resource Management**: Gold earned from kills
-5. **Wave Management**: Force timer creates overlapping waves after 45 seconds
-6. **Victory/Defeat**: Wave completion or life depletion
+4. **Resource Management**: Gold earned from kills, spent on towers and upgrades
+5. **Tower Upgrades**: Click existing towers to enhance stats with gold
+6. **Wave Management**: Force timer creates overlapping waves after 45 seconds
+7. **Victory/Defeat**: Wave completion or life depletion
 
 ### Advanced Features
 - **Camera Panning**: Explore full level layouts
@@ -128,6 +147,9 @@ ENEMY_TYPES = {
 - **Overlapping Waves**: Multiple active waves with force timer system
 - **Manual Wave Control**: Player-initiated wave skipping
 - **Visual Feedback**: Real-time countdown and warning systems
+- **Tower Upgrades**: Progressive enhancement system with visual indicators
+- **Interactive UI**: Hover tooltips with detailed tower information
+- **Dynamic Range Display**: Range circles update with tower upgrades
 
 ## 🔧 Technical Implementation
 
@@ -209,9 +231,19 @@ game/
 - **New Enemies**: Flexible enemy property system
 - **New Mechanics**: Event-driven architecture supports additions
 
-## 📝 Recent Improvements (v2.1.0)
+## 📝 Recent Improvements
 
-### Combat System Fixes
+### v2.2.0 - Tower Upgrade System
+- **Tower Upgrades**: Complete 3-level upgrade system for all tower types
+- **Progressive Costs**: Balanced upgrade costs increasing per level
+- **Multiplicative Bonuses**: Damage, range, fire rate, and splash radius improvements
+- **Visual Indicators**: Colored dots show upgrade levels above towers
+- **Interactive Tooltips**: Hover over towers to see detailed stats and upgrade previews
+- **Dynamic Range Display**: Range circles update to show actual upgraded ranges
+- **UI Optimization**: Improved layout to prevent text overlap and better spacing
+- **Strategic Depth**: Added upgrade vs. placement decision making
+
+### v2.1.0 - Combat System Fixes
 - **Flying Splash Immunity**: Flying enemies now properly immune to splash damage
 - **Feature Verification**: All tower and enemy special abilities tested and confirmed working
 - **Balance Validation**: Comprehensive testing of armor, regeneration, homing, and piercing mechanics

@@ -7,6 +7,7 @@ import math
 from typing import List, Dict, Tuple
 from .constants import *
 from .level import Level
+from .sprite_manager import sprite_manager
 
 class Enemy:
     """Base enemy class"""
@@ -89,8 +90,16 @@ class Enemy:
         
         # Only render if visible on screen
         if -50 <= screen_x <= GAME_AREA_WIDTH + 50 and -50 <= screen_y <= SCREEN_HEIGHT + 50:
-            # Draw enemy as colored circle
-            pygame.draw.circle(screen, self.color, (int(screen_x), int(screen_y)), self.size)
+            # Get enemy sprite
+            sprite = sprite_manager.get_enemy_sprite(self.enemy_type)
+            
+            if sprite:
+                # Center the sprite on the enemy position
+                sprite_rect = sprite.get_rect(center=(int(screen_x), int(screen_y)))
+                screen.blit(sprite, sprite_rect)
+            else:
+                # Fallback to simple circle if sprite not available
+                pygame.draw.circle(screen, self.color, (int(screen_x), int(screen_y)), self.size)
             
             # Draw health bar above enemy
             self._draw_health_bar(screen, screen_x, screen_y)

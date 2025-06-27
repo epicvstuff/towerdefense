@@ -4,8 +4,9 @@ Tower classes and management system
 
 import pygame  # type: ignore
 import math
-from typing import List, Optional, Tuple, Any
+from typing import List, Optional, Tuple, Any, Dict
 from .constants import *
+from .sprite_manager import sprite_manager
 
 class Projectile:
     """Projectile fired by towers"""
@@ -114,14 +115,27 @@ class Projectile:
             
             # Only render if visible on screen
             if -10 <= screen_x <= GAME_AREA_WIDTH + 10 and -10 <= screen_y <= SCREEN_HEIGHT + 10:
-                # Draw projectile as small circle
+                # Get appropriate sprite
                 if self.piercing:
-                    color = (255, 0, 255)  # Magenta for laser
+                    sprite = sprite_manager.get_projectile_sprite('piercing')
                 elif self.homing:
-                    color = YELLOW
+                    sprite = sprite_manager.get_projectile_sprite('homing')
                 else:
-                    color = WHITE
-                pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), 3)
+                    sprite = sprite_manager.get_projectile_sprite('bullet')
+                
+                if sprite:
+                    # Center the sprite on the projectile position
+                    sprite_rect = sprite.get_rect(center=(int(screen_x), int(screen_y)))
+                    screen.blit(sprite, sprite_rect)
+                else:
+                    # Fallback to simple circle if sprite not available
+                    if self.piercing:
+                        color = (255, 0, 255)  # Magenta for laser
+                    elif self.homing:
+                        color = YELLOW
+                    else:
+                        color = WHITE
+                    pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), 3)
 
 class Tower:
     """Base tower class"""
@@ -131,16 +145,14 @@ class Tower:
         self.grid_x = grid_x
         self.grid_y = grid_y
         
-        # Get tower stats from constants
-        stats = TOWER_TYPES[tower_type]
-        self.damage = stats['damage']
-        self.range = stats['range']
-        self.fire_rate = stats['fire_rate']
-        self.splash_radius = stats['splash_radius']
-        self.color = stats['color']
-        self.projectile_speed = stats['projectile_speed']
-        self.homing = stats.get('homing', False)
-        self.piercing = stats.get('piercing', False)
+        # Upgrade system
+        self.upgrade_level = 0  # 0 = base level, 1-3 = upgrade levels
+        
+        # Get base tower stats from constants
+        self.base_stats = TOWER_TYPES[tower_type].copy()
+        
+        # Calculate current stats (base stats modified by upgrades)
+        self._update_stats()
         
         # Position in world coordinates
         self.x = grid_x * GRID_SIZE + GRID_SIZE // 2
@@ -154,6 +166,84 @@ class Tower:
         # Projectiles
         self.projectiles: List[Projectile] = []
     
+    def _update_stats(self) -> None:
+        """Update tower stats based on current upgrade level"""
+        # Start with base stats
+        self.damage = self.base_stats['damage']
+        self.range = self.base_stats['range']
+        self.fire_rate = self.base_stats['fire_rate']
+        self.splash_radius = self.base_stats['splash_radius']
+        self.color = self.base_stats['color']
+        self.projectile_speed = self.base_stats['projectile_speed']
+        self.homing = self.base_stats.get('homing', False)
+        self.piercing = self.base_stats.get('piercing', False)
+        
+        # Apply upgrade multipliers
+        if self.upgrade_level > 0:
+            level_index = self.upgrade_level - 1  # Convert to 0-based index
+            
+            # Apply damage multiplier
+            self.damage = int(self.damage * UPGRADE_MULTIPLIERS['damage'][level_index])
+            
+            # Apply range multiplier
+            self.range = int(self.range * UPGRADE_MULTIPLIERS['range'][level_index])
+            
+            # Apply fire rate multiplier
+            self.fire_rate = self.fire_rate * UPGRADE_MULTIPLIERS['fire_rate'][level_index]
+            
+            # Apply splash radius multiplier (if tower has splash)
+            if self.splash_radius > 0:
+                self.splash_radius = int(self.splash_radius * UPGRADE_MULTIPLIERS['splash_radius'][level_index])
+        
+        # Update shot cooldown based on new fire rate
+        self.shot_cooldown = 1.0 / self.fire_rate
+    
+    def can_upgrade(self) -> bool:
+        """Check if tower can be upgraded"""
+        return self.upgrade_level < MAX_UPGRADE_LEVEL
+    
+    def get_upgrade_cost(self) -> int:
+        """Get cost to upgrade to next level"""
+        if not self.can_upgrade():
+            return 0
+        return UPGRADE_COSTS[self.tower_type][self.upgrade_level]
+    
+    def upgrade(self) -> bool:
+        """Upgrade the tower to next level"""
+        if not self.can_upgrade():
+            return False
+        
+        self.upgrade_level += 1
+        self._update_stats()
+        return True
+    
+    def get_stats_preview(self, preview_level: Optional[int] = None) -> Dict[str, Any]:
+        """Get tower stats for current or preview level"""
+        if preview_level is None:
+            preview_level = self.upgrade_level
+        
+        # Calculate stats for preview level
+        damage = self.base_stats['damage']
+        range_val = self.base_stats['range']
+        fire_rate = self.base_stats['fire_rate']
+        splash_radius = self.base_stats['splash_radius']
+        
+        if preview_level > 0:
+            level_index = preview_level - 1
+            damage = int(damage * UPGRADE_MULTIPLIERS['damage'][level_index])
+            range_val = int(range_val * UPGRADE_MULTIPLIERS['range'][level_index])
+            fire_rate = fire_rate * UPGRADE_MULTIPLIERS['fire_rate'][level_index]
+            if splash_radius > 0:
+                splash_radius = int(splash_radius * UPGRADE_MULTIPLIERS['splash_radius'][level_index])
+        
+        return {
+            'damage': damage,
+            'range': range_val,
+            'fire_rate': fire_rate,
+            'splash_radius': splash_radius,
+            'upgrade_level': preview_level
+        }
+
     def update(self, dt: float, enemies: List) -> None:
         """Update tower targeting and shooting"""
         # Update shot cooldown timer
@@ -224,19 +314,53 @@ class Tower:
         
         # Only render if visible on screen
         if -50 <= screen_x <= GAME_AREA_WIDTH + 50 and -50 <= screen_y <= SCREEN_HEIGHT + 50:
-            # Draw tower as rectangle
-            tower_size = GRID_SIZE - 4
-            tower_rect = pygame.Rect(
-                screen_x - tower_size // 2,
-                screen_y - tower_size // 2,
-                tower_size,
-                tower_size
-            )
-            pygame.draw.rect(screen, self.color, tower_rect)
+            # Get tower sprite
+            sprite = sprite_manager.get_tower_sprite(self.tower_type)
+            
+            if sprite:
+                # Center the sprite on the tower position
+                sprite_rect = sprite.get_rect(center=(int(screen_x), int(screen_y)))
+                screen.blit(sprite, sprite_rect)
+            else:
+                # Fallback to simple rectangle if sprite not available
+                tower_size = GRID_SIZE - 4
+                tower_rect = pygame.Rect(
+                    screen_x - tower_size // 2,
+                    screen_y - tower_size // 2,
+                    tower_size,
+                    tower_size
+                )
+                pygame.draw.rect(screen, self.color, tower_rect)
+            
+            # Draw upgrade level indicators
+            if self.upgrade_level > 0:
+                self._draw_upgrade_indicators(screen, int(screen_x), int(screen_y))
         
         # Draw projectiles
         for projectile in self.projectiles:
             projectile.render(screen, level)
+    
+    def _draw_upgrade_indicators(self, screen: pygame.Surface, center_x: int, center_y: int) -> None:
+        """Draw visual indicators for upgrade level"""
+        # Draw stars or dots to indicate upgrade level
+        indicator_size = 3
+        spacing = 8
+        start_x = center_x - (self.upgrade_level - 1) * spacing // 2
+        
+        for i in range(self.upgrade_level):
+            x = start_x + i * spacing
+            y = center_y - GRID_SIZE // 2 - 8  # Above the tower
+            
+            # Draw upgrade star/dot
+            if self.upgrade_level == 1:
+                color = (255, 255, 0)  # Yellow for level 1
+            elif self.upgrade_level == 2:
+                color = (255, 165, 0)  # Orange for level 2
+            else:
+                color = (255, 0, 0)    # Red for level 3
+            
+            pygame.draw.circle(screen, color, (x, y), indicator_size)
+            pygame.draw.circle(screen, WHITE, (x, y), indicator_size, 1)
 
 class TowerManager:
     """Manages all towers"""
@@ -260,6 +384,20 @@ class TowerManager:
         for tower in self.towers:
             if tower.grid_x == grid_x and tower.grid_y == grid_y:
                 return True
+        return False
+    
+    def get_tower_at(self, grid_x: int, grid_y: int) -> Optional[Tower]:
+        """Get tower at specific position"""
+        for tower in self.towers:
+            if tower.grid_x == grid_x and tower.grid_y == grid_y:
+                return tower
+        return None
+    
+    def upgrade_tower_at(self, grid_x: int, grid_y: int) -> bool:
+        """Upgrade tower at specific position"""
+        tower = self.get_tower_at(grid_x, grid_y)
+        if tower and tower.can_upgrade():
+            return tower.upgrade()
         return False
     
     def update(self, dt: float, enemies: List) -> None:
