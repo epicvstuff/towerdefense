@@ -4,13 +4,14 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
 
 ## 🎮 Game Features
 
-### **Phase 2 Complete: Enhanced Content & Variety**
-- **2 Unique Levels** with different challenge levels and paths
-- **4 Tower Types** with specialized abilities
-- **6 Enemy Types** including armored and boss enemies
-- **20 Progressive Waves** across both levels
+### **Phase 3 Complete: Master-Level Challenge**
+- **4 Unique Levels** with escalating difficulty and unique mechanics
+- **4 Tower Types** with specialized abilities and 3-level upgrade system
+- **12 Enemy Types** including special abilities and boss-level threats
+- **40 Progressive Waves** across all levels
 - **Camera Panning System** for level exploration
-- **Complete Gameplay Loop** with win/lose conditions
+- **Advanced Enemy Mechanics** with stealth, berserker rage, and phase abilities
+- **Complete Gameplay Loop** with strategic depth and replayability
 
 ## 🏰 Tower Types
 
@@ -66,12 +67,36 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **Heavy Tank**: 150 HP, 15 speed, 15 gold reward
 - **Flying Unit**: 40 HP, 40 speed, 12 gold reward (immune to splash)
 
-### Advanced Enemies ⚡ NEW!
+### Advanced Enemies
 - **Armored Unit**: 200 HP, 25 speed, 25 gold reward
   - **Armor**: Reduces all damage by 5 (minimum 1)
 - **Boss Enemy**: 500 HP, 20 speed, 100 gold reward
   - **Heavy Armor**: Reduces all damage by 10
   - **Regeneration**: Heals 2 HP per second
+- **Elite Unit**: 300 HP, 35 speed, 50 gold reward
+  - **Flying**: Immune to splash damage, only targeted by missiles/lasers
+  - **Armor**: Reduces damage by 3
+  - **Regeneration**: Heals 1 HP per second
+- **Swarm Unit**: 15 HP, 80 speed, 3 gold reward
+  - **Ultra Fast**: Extremely high speed, low health
+
+### Master-Level Enemies ⚡ NEW!
+- **Stealth Unit**: 120 HP, 45 speed, 30 gold reward
+  - **Stealth**: Becomes invisible periodically, harder to target
+  - **Armor**: Reduces damage by 3
+  - **Counter**: Laser towers can reliably target stealthed enemies
+- **Berserker Unit**: 80 HP, 25 speed, 35 gold reward
+  - **Rage Mode**: Speed increases to 62.5 when below 50% health
+  - **Visual Indicator**: Red glow when enraged
+- **Titan Unit**: 800 HP, 12 speed, 150 gold reward
+  - **Massive Armor**: Reduces damage by 15
+  - **Regeneration**: Heals 3 HP per second
+  - **Splash Immunity**: Immune to splash damage
+  - **Boss-Level**: Requires concentrated fire to defeat
+- **Phantom Unit**: 60 HP, 50 speed, 40 gold reward
+  - **Flying**: Only targeted by missiles/lasers
+  - **Phase Ability**: Temporarily immune to non-laser attacks
+  - **Armor**: Reduces damage by 2
 
 ## 🗺️ Levels
 
@@ -87,11 +112,18 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **Waves**: 10 waves with armored enemies and boss fights
 - **Focus**: Advanced tactics and resource management
 
-### Level 3: Desert Canyon ⚡ NEW!
+### Level 3: Desert Canyon
 - **Difficulty**: Expert challenge  
 - **Path**: Serpentine winding canyon path with multiple curves
 - **Waves**: 10 waves featuring swarm enemies and elite units
 - **Focus**: Fast-paced action with overlapping wave mechanics
+
+### Level 4: Nightmare Spiral ⚡ NEW!
+- **Difficulty**: Master-level challenge
+- **Path**: Complex triple-spiral pattern requiring strategic placement
+- **Waves**: 10 waves introducing all new enemy types and abilities
+- **Focus**: Ultimate test of tower defense mastery with advanced enemy mechanics
+- **Special Features**: Stealth enemies, berserker rage, titan bosses, and phantom units
 
 ## 🎯 Controls
 
@@ -100,6 +132,7 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **1**: Select Level 1 (Forest Path)
 - **2**: Select Level 2 (Mountain Pass)
 - **3**: Select Level 3 (Desert Canyon)
+- **4**: Select Level 4 (Nightmare Spiral)
 
 ### Gameplay Controls
 - **1, 2, 3, 4**: Select tower type (Cannon, Machine Gun, Missile, Laser)
@@ -183,12 +216,54 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - Watch the force timer - plan your builds for incoming waves
 - Boss enemy regenerates - focus fire with multiple towers
 
+**Nightmare Spiral (Level 4)** ⚡ NEW!:
+- **Stealth Enemies**: Laser towers are essential for reliable targeting
+- **Berserker Units**: Focus fire before they reach rage mode (50% health)
+- **Titan Bosses**: Require multiple upgraded towers, immune to splash damage
+- **Phantom Units**: Only lasers can hit them while phased
+- **Spiral Path**: Inner spiral offers multiple targeting opportunities
+- **Advanced Strategy**: Prioritize laser towers for their versatility against special abilities
+- **Resource Management**: Expensive enemies require careful upgrade planning
+
 ## 🏗️ Technical Details
 
 - **Engine**: Python 3.8+ with Pygame 2.0+
 - **Resolution**: 800x600 (scalable)
 - **Target FPS**: 60 FPS
 - **Architecture**: Component-based game systems
+
+## 📈 Changelog
+
+### v2.3.0 - Master-Level Challenge Update
+- **NEW**: Level 4 "Nightmare Spiral" with complex triple-spiral path design
+- **NEW**: 4 Advanced enemy types with special abilities:
+  - Stealth enemies with invisibility cycles
+  - Berserker units with rage-induced speed boost
+  - Titan bosses with massive armor and splash immunity
+  - Phantom units with phase abilities
+- **Enhanced**: Tower targeting system accounts for stealth and phase abilities
+- **Enhanced**: Laser towers are now essential for countering advanced enemy mechanics
+- **Enhanced**: Visual indicators for enemy special abilities (stealth transparency, berserker glow, etc.)
+- **Enhanced**: Sprite system includes placeholders for all new enemy types
+- **Balanced**: Level 4 provides ultimate challenge for experienced players
+
+### v2.2.0 - Tower Upgrade System
+- **NEW**: 3-level tower upgrade system with progressive stat bonuses
+- **NEW**: Interactive upgrade interface with hover tooltips and cost display
+- **NEW**: Visual upgrade indicators with colored dots above towers
+- **Enhanced**: Complete sprite system with professional placeholder generation
+- **Enhanced**: Dynamic range circles that update with tower upgrades
+- **Enhanced**: Strategic depth balancing placement vs. upgrade decisions
+
+### v2.1.0 - Enhanced Wave Management
+- **NEW**: Level 3 "Desert Canyon" with expert-level serpentine path
+- **NEW**: Manual wave skipping with 'N' key and interactive button
+- **NEW**: 45-second force timer for automatic wave progression
+- **NEW**: Visual countdown timer with color-coded warnings
+- **Enhanced**: Overlapping wave system for increased challenge
+- **Enhanced**: Elite and Swarm enemy types with unique mechanics
+- **Fixed**: Flying enemy splash damage immunity
+- **Fixed**: Range circle display updates with tower upgrades
 
 ## 📁 Project Structure
 

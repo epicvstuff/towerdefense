@@ -33,6 +33,12 @@ class SpriteManager:
         self._load_or_create_sprite('elite_enemy', (44, 44), (255, 140, 0))
         self._load_or_create_sprite('swarm_enemy', (16, 16), (0, 255, 255))
         
+        # New enemy sprites for Level 4
+        self._load_or_create_sprite('stealth_enemy', (32, 32), (64, 64, 64))
+        self._load_or_create_sprite('berserker_enemy', (36, 36), (255, 69, 0))
+        self._load_or_create_sprite('titan_enemy', (70, 70), (139, 69, 19))
+        self._load_or_create_sprite('phantom_enemy', (28, 28), (148, 0, 211))
+        
         # Projectile sprites
         self._load_or_create_sprite('bullet', (6, 6), WHITE)
         self._load_or_create_sprite('missile', (8, 8), YELLOW)
@@ -106,6 +112,39 @@ class SpriteManager:
                 # Speed lines
                 for i in range(3):
                     pygame.draw.line(sprite, WHITE, (2, center_y-2+i*2), (width//3, center_y-2+i*2), 1)
+            elif 'stealth' in name:
+                # Stealth effect - dotted outline
+                for angle in range(0, 360, 30):
+                    import math
+                    x = center_x + int(radius * 0.8 * math.cos(math.radians(angle)))
+                    y = center_y + int(radius * 0.8 * math.sin(math.radians(angle)))
+                    pygame.draw.circle(sprite, WHITE, (x, y), 2)
+            elif 'berserker' in name:
+                # Berserker rage - jagged edges
+                for i in range(8):
+                    angle = i * 45
+                    import math
+                    x1 = center_x + int(radius * 0.7 * math.cos(math.radians(angle)))
+                    y1 = center_y + int(radius * 0.7 * math.sin(math.radians(angle)))
+                    x2 = center_x + int(radius * 1.2 * math.cos(math.radians(angle)))
+                    y2 = center_y + int(radius * 1.2 * math.sin(math.radians(angle)))
+                    pygame.draw.line(sprite, (255, 100, 100), (x1, y1), (x2, y2), 2)
+            elif 'titan' in name:
+                # Titan - massive with armor segments
+                pygame.draw.circle(sprite, (100, 50, 25), (center_x, center_y), radius-2)
+                for i in range(4):
+                    angle = i * 90
+                    import math
+                    x = center_x + int(radius * 0.6 * math.cos(math.radians(angle)))
+                    y = center_y + int(radius * 0.6 * math.sin(math.radians(angle)))
+                    pygame.draw.circle(sprite, (80, 40, 20), (x, y), 3)
+            elif 'phantom' in name:
+                # Phantom - ethereal with transparent effect
+                # Draw multiple overlapping circles with different alphas
+                temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+                pygame.draw.circle(temp_surface, (*color, 128), (center_x, center_y), radius)
+                pygame.draw.circle(temp_surface, (*color, 64), (center_x, center_y), radius-2)
+                sprite.blit(temp_surface, (0, 0))
                     
         elif 'projectile' in name or 'bullet' in name or 'missile' in name or 'laser' in name:
             # Projectile sprites - small with distinct shapes

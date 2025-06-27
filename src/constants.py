@@ -156,6 +156,45 @@ ENEMY_TYPES = {
         'reward': 3,
         'color': (0, 255, 255),  # Cyan
         'size': 8  # Very small, very fast, low health
+    },
+    'stealth': {
+        'health': 120,
+        'speed': 45,
+        'reward': 30,
+        'color': (64, 64, 64),  # Dark gray
+        'size': 16,
+        'armor': 3,
+        'stealth': True  # Becomes invisible periodically
+    },
+    'berserker': {
+        'health': 80,
+        'speed': 25,  # Starts slow
+        'reward': 35,
+        'color': (255, 69, 0),  # Red-orange
+        'size': 18,
+        'berserker': True,  # Speeds up when damaged
+        'speed_boost': 2.5  # Multiplier when below 50% health
+    },
+    'titan': {
+        'health': 800,
+        'speed': 12,
+        'reward': 150,
+        'color': (139, 69, 19),  # Saddle brown
+        'size': 35,
+        'armor': 15,
+        'regeneration': 3,
+        'splash_immune': True,  # Immune to splash damage
+        'titan': True  # Special boss-level enemy
+    },
+    'phantom': {
+        'health': 60,
+        'speed': 50,
+        'reward': 40,
+        'color': (148, 0, 211),  # Dark violet
+        'size': 14,
+        'flying': True,
+        'phase': True,  # Can phase through some towers briefly
+        'armor': 2
     }
 }
 
@@ -267,6 +306,56 @@ LEVELS = {
             {"basic": 50, "fast": 45, "heavy": 35, "flying": 30, "armored": 20, "elite": 10, "swarm": 40, "delay": 0.2},
             {"basic": 55, "fast": 50, "heavy": 40, "flying": 35, "armored": 25, "elite": 12, "swarm": 45, "boss": 1, "delay": 0.2},
             {"basic": 60, "fast": 55, "heavy": 45, "flying": 40, "armored": 30, "elite": 15, "swarm": 50, "boss": 2, "delay": 0.1}  # Ultimate challenge
+        ]
+    },
+    4: {
+        'name': 'Nightmare Spiral',
+        'path': [
+            # Outer spiral entrance
+            (0, 7), (1, 7), (2, 6), (3, 5), (4, 4), (5, 3),              # Diagonal entrance
+            (6, 2), (7, 1), (8, 0), (9, 0), (10, 0), (11, 0),            # Top edge
+            (12, 1), (13, 2), (14, 3), (15, 4), (16, 5), (17, 6),        # Right descent
+            (18, 7), (19, 8), (19, 9), (19, 10), (19, 11), (19, 12),     # Right edge down
+            (19, 13), (19, 14), (18, 14), (17, 14), (16, 14), (15, 14),  # Bottom edge
+            (14, 14), (13, 14), (12, 13), (11, 12), (10, 11), (9, 10),   # Bottom left
+            
+            # Middle spiral layer
+            (8, 9), (7, 8), (6, 7), (5, 6), (4, 5), (3, 4),              # Inner approach
+            (2, 3), (1, 2), (2, 1), (3, 1), (4, 1), (5, 1),              # Inner top
+            (6, 1), (7, 2), (8, 3), (9, 4), (10, 5), (11, 6),            # Inner right
+            (12, 7), (13, 8), (14, 9), (15, 10), (16, 11), (17, 12),     # Inner bottom right
+            (16, 13), (15, 13), (14, 13), (13, 12), (12, 11), (11, 10),  # Inner bottom
+            
+            # Core spiral
+            (10, 9), (9, 8), (8, 7), (7, 6), (6, 5), (5, 4),             # Core approach
+            (4, 3), (3, 2), (4, 2), (5, 2), (6, 3), (7, 4),              # Core center
+            (8, 5), (9, 6), (10, 7), (11, 8), (12, 9), (13, 10),         # Core spiral out
+            (14, 11), (15, 12), (14, 12), (13, 11), (12, 10), (11, 9),   # Core exit
+            
+            # Final escape route
+            (10, 8), (9, 7), (8, 6), (7, 5), (6, 4), (5, 3),             # Final spiral
+            (6, 2), (7, 3), (8, 4), (9, 5), (10, 6), (11, 7),            # Escape path
+            (12, 8), (13, 9), (14, 10), (15, 11), (16, 12), (17, 13),    # Exit approach
+            (18, 13), (19, 13)                                            # Final exit
+        ],
+        'waves': [
+            # Wave 1-3: Introduction to new enemies
+            {"basic": 25, "fast": 20, "heavy": 10, "stealth": 5, "delay": 0.7},
+            {"basic": 30, "fast": 25, "heavy": 15, "flying": 8, "stealth": 8, "berserker": 3, "delay": 0.6},
+            {"basic": 35, "fast": 30, "heavy": 20, "flying": 12, "armored": 5, "stealth": 10, "berserker": 5, "delay": 0.5},
+            
+            # Wave 4-6: Phantom enemies appear
+            {"basic": 30, "fast": 25, "heavy": 18, "flying": 15, "armored": 8, "stealth": 12, "berserker": 6, "phantom": 4, "delay": 0.5},
+            {"basic": 35, "fast": 30, "heavy": 22, "flying": 18, "armored": 12, "stealth": 15, "berserker": 8, "phantom": 6, "swarm": 20, "delay": 0.4},
+            {"basic": 40, "fast": 35, "heavy": 25, "flying": 22, "armored": 15, "stealth": 18, "berserker": 10, "phantom": 8, "swarm": 25, "elite": 3, "delay": 0.4},
+            
+            # Wave 7-9: Titan introduction
+            {"basic": 35, "fast": 30, "heavy": 20, "flying": 20, "armored": 18, "stealth": 15, "berserker": 12, "phantom": 10, "swarm": 30, "elite": 5, "titan": 1, "delay": 0.3},
+            {"basic": 40, "fast": 35, "heavy": 25, "flying": 25, "armored": 22, "stealth": 20, "berserker": 15, "phantom": 12, "swarm": 35, "elite": 8, "titan": 2, "delay": 0.3},
+            {"basic": 45, "fast": 40, "heavy": 30, "flying": 30, "armored": 25, "stealth": 25, "berserker": 18, "phantom": 15, "swarm": 40, "elite": 10, "boss": 1, "titan": 2, "delay": 0.2},
+            
+            # Wave 10: Ultimate nightmare
+            {"basic": 50, "fast": 45, "heavy": 35, "flying": 35, "armored": 30, "stealth": 30, "berserker": 20, "phantom": 18, "swarm": 50, "elite": 15, "boss": 2, "titan": 3, "delay": 0.1}
         ]
     }
 }

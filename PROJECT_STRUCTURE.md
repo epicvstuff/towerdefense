@@ -9,13 +9,14 @@
 - Integration & polish (UI, camera system, balance)
 
 ### ✅ Phase 2: Enhanced Content & Variety (COMPLETED)
-- **3 Unique Levels**: Forest Path (beginner), Mountain Pass (advanced), Desert Canyon (expert)
-- **New Tower Type**: Laser Tower with piercing capability
-- **Advanced Enemies**: Armored units, regenerating boss enemies, swarm and elite units
-- **Enhanced Gameplay**: 30 total waves across three levels
-- **Level Selection**: Menu system for choosing levels
+- **4 Unique Levels**: Forest Path (beginner), Mountain Pass (advanced), Desert Canyon (expert), Nightmare Spiral (master)
+- **New Tower Type**: Laser Tower with piercing capability and special ability counters
+- **Advanced Enemies**: 12 total enemy types including stealth, berserker, titan, and phantom units
+- **Enhanced Gameplay**: 40 total waves across four levels
+- **Level Selection**: Menu system for choosing all four levels
 - **Overlapping Waves**: Force timer and manual skip mechanics
 - **Interactive UI**: Skip wave button and visual countdown timer
+- **Master-Level Mechanics**: Special enemy abilities requiring strategic tower selection
 
 ### 🔮 Phase 3: Polish & Features (PLANNED)
 - Speed controls and enhanced UI
@@ -54,10 +55,16 @@ main.py → Game.update() → {
 - **Interactive Info**: Hover tooltips with current and next-level stats
 
 #### Enemy System (`src/enemy.py`)
-- **6 Enemy Types**: Basic, Fast, Heavy, Flying, Armored, Boss
-- **Advanced Mechanics**: Armor reduction, health regeneration
+- **12 Enemy Types**: Basic, Fast, Heavy, Flying, Armored, Boss, Elite, Swarm, Stealth, Berserker, Titan, Phantom
+- **Advanced Mechanics**: Armor reduction, health regeneration, special abilities
+- **Special Abilities**: 
+  - **Stealth**: Periodic invisibility with targeting difficulty
+  - **Berserker**: Speed boost when damaged below 50% health
+  - **Phase**: Temporary immunity to non-laser attacks
+  - **Splash Immunity**: Titans immune to splash damage
 - **Wave Management**: Configurable spawning with delays
 - **Path Following**: Smooth movement along level paths
+- **Visual Effects**: Transparency for stealth, glow for berserker rage
 
 #### User Interface (`src/ui.py`)
 - **Game Statistics**: Gold, lives, wave progress
@@ -119,6 +126,37 @@ ENEMY_TYPES = {
         'health': 500,
         'armor': 10,
         'regeneration': 2  # HP per second
+    },
+    'stealth': {
+        'health': 120,
+        'speed': 45,
+        'reward': 30,
+        'armor': 3,
+        'stealth': True  # Periodic invisibility
+    },
+    'berserker': {
+        'health': 80,
+        'speed': 25,
+        'reward': 35,
+        'berserker': True,
+        'speed_boost': 2.5  # Speed multiplier when damaged
+    },
+    'titan': {
+        'health': 800,
+        'speed': 12,
+        'reward': 150,
+        'armor': 15,
+        'regeneration': 3,
+        'splash_immune': True,
+        'titan': True
+    },
+    'phantom': {
+        'health': 60,
+        'speed': 50,
+        'reward': 40,
+        'flying': True,
+        'phase': True,  # Temporary immunity to non-laser attacks
+        'armor': 2
     }
 }
 ```

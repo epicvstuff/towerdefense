@@ -64,6 +64,8 @@ class Game:
                     self.select_level(2)
                 elif event.key == pygame.K_3:
                     self.select_level(3)
+                elif event.key == pygame.K_4:
+                    self.select_level(4)
         
         elif self.state == GameState.PLAYING:
             if event.type == pygame.KEYDOWN:
@@ -316,9 +318,23 @@ class Game:
         
         # Level selection
         font = pygame.font.Font(None, 24)
-        select_text = font.render("Press 1 for Forest Path, 2 for Mountain Pass, 3 for Desert Canyon", True, GRAY)
+        select_text = font.render("Press 1-4 for Level Selection", True, GRAY)
         select_rect = select_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70))
         self.screen.blit(select_text, select_rect)
+        
+        # Level descriptions
+        font = pygame.font.Font(None, 18)
+        level_descriptions = [
+            "1: Forest Path (Beginner)",
+            "2: Mountain Pass (Advanced)", 
+            "3: Desert Canyon (Expert)",
+            "4: Nightmare Spiral (Master)"
+        ]
+        
+        for i, desc in enumerate(level_descriptions):
+            desc_text = font.render(desc, True, GRAY)
+            desc_rect = desc_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 90 + i * 20))
+            self.screen.blit(desc_text, desc_rect)
     
     def render_game(self) -> None:
         """Render the main game view"""

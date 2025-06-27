@@ -92,8 +92,8 @@ class Projectile:
         if self.splash_radius > 0:
             for enemy in all_enemies:
                 if enemy != primary_enemy and enemy.is_alive:
-                    # Flying enemies are immune to splash damage
-                    if enemy.flying:
+                    # Flying enemies and splash-immune enemies are immune to splash damage
+                    if enemy.flying or getattr(enemy, 'splash_immune', False):
                         continue
                         
                     distance = math.sqrt((self.x - enemy.x) ** 2 + (self.y - enemy.y) ** 2)
@@ -274,6 +274,21 @@ class Tower:
                     # Check if this tower can target flying enemies
                     if enemy.flying and self.tower_type not in ['missile', 'laser']:
                         continue  # Can't target flying enemies
+                    
+                    # Check if enemy is stealthed (harder to target)
+                    if hasattr(enemy, 'stealth') and enemy.stealth and enemy.is_stealthed:
+                        # Only laser towers can reliably target stealthed enemies
+                        if self.tower_type != 'laser':
+                            import random
+                            if random.random() < 0.7:  # 70% chance to miss stealthed enemies
+                                continue
+                    
+                    # Check if enemy is phased (immune to some towers temporarily)
+                    if hasattr(enemy, 'phase') and enemy.phase and enemy.is_phased:
+                        # Phased enemies can only be hit by laser towers
+                        if self.tower_type != 'laser':
+                            continue
+                    
                     enemies_in_range.append((enemy, distance))
         
         if not enemies_in_range:
