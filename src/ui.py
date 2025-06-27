@@ -101,7 +101,7 @@ class UI:
         
         # Tower selection
         self._draw_tower_selection(y_pos)
-        y_pos += 210  # Proper spacing (4 towers × 45px + 30px title + 20px buffer)
+        y_pos += 220  # Updated spacing (5 towers × 38px + 30px title + 10px buffer)
         
         # Controls help
         self._draw_controls(y_pos)
@@ -172,19 +172,20 @@ class UI:
             ('cannon', '1', 'Cannon'),
             ('machine_gun', '2', 'Machine Gun'),
             ('missile', '3', 'Missile'),
-            ('laser', '4', 'Laser')
+            ('laser', '4', 'Laser'),
+            ('freeze', '5', 'Freeze')
         ]
         
         for tower_type, key, name in towers:
             self._draw_tower_button(x_pos, y_pos, tower_type, key, name)
-            y_pos += 45  # Reduced spacing between tower buttons
+            y_pos += 38  # Reduced spacing between tower buttons to fit 5 towers better
     
     def _draw_tower_button(self, x: int, y: int, tower_type: str, key: str, name: str) -> None:
         """Draw a tower selection button"""
         stats = TOWER_TYPES[tower_type]
         
         # Button background
-        button_rect = pygame.Rect(x, y, 170, 35)  # Slightly shorter buttons
+        button_rect = pygame.Rect(x, y, 170, 32)  # Reduced height from 35 to 32
         pygame.draw.rect(self.screen, stats['color'], button_rect)
         pygame.draw.rect(self.screen, WHITE, button_rect, 1)
         
@@ -192,16 +193,16 @@ class UI:
         tower_sprite = sprite_manager.get_tower_sprite(tower_type)
         if tower_sprite:
             # Scale sprite to fit button
-            scaled_sprite = pygame.transform.scale(tower_sprite, (25, 25))  # Slightly smaller sprite
-            sprite_rect = scaled_sprite.get_rect(center=(x + 17, y + 17))  # Adjusted center
+            scaled_sprite = pygame.transform.scale(tower_sprite, (22, 22))  # Slightly smaller sprite
+            sprite_rect = scaled_sprite.get_rect(center=(x + 15, y + 16))  # Adjusted center
             self.screen.blit(scaled_sprite, sprite_rect)
         
         # Tower info
         name_text = self.small_font.render(f"{key}. {name}", True, WHITE)
         cost_text = self.small_font.render(f"Cost: {stats['cost']}", True, WHITE)
         
-        self.screen.blit(name_text, (x + 35, y + 5))   # Adjusted for smaller sprite
-        self.screen.blit(cost_text, (x + 35, y + 18))  # Adjusted for shorter button
+        self.screen.blit(name_text, (x + 32, y + 4))   # Adjusted for smaller sprite and button
+        self.screen.blit(cost_text, (x + 32, y + 17))  # Adjusted for shorter button
     
     def render_tower_info(self, tower, mouse_pos: tuple) -> None:
         """Render tower information popup near mouse"""
@@ -271,7 +272,7 @@ class UI:
         y_pos += 25
         
         controls = [
-            "1,2,3,4: Select Tower",
+            "1,2,3,4,5: Select Tower",
             "Click: Place/Upgrade Tower",
             "Hover: Show Tower Info",
             "WASD/Arrows: Pan Camera",

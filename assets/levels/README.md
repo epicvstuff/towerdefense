@@ -28,7 +28,7 @@ Phase 1 uses a single hardcoded level path defined in `src/constants.py` as `LEV
 }
 ```
 
-### Planned Levels
+### Planned Levels (out of date)
 - `level_01_grasslands.json` - Tutorial level (current hardcoded level)
 - `level_02_desert.json` - Desert theme with heat mirages
 - `level_03_snow.json` - Snow theme with slowing effects

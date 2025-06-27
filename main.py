@@ -20,6 +20,10 @@ def main():
     # Create clock for FPS control
     clock = pygame.time.Clock()
     
+    # Ensure sprites are loaded after display initialization
+    from src.sprite_manager import sprite_manager
+    sprite_manager.ensure_sprites_loaded()
+    
     # Create game instance
     game = Game(screen)
     

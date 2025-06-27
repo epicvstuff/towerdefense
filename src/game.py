@@ -66,6 +66,10 @@ class Game:
                     self.select_level(3)
                 elif event.key == pygame.K_4:
                     self.select_level(4)
+                elif event.key == pygame.K_5:
+                    self.select_level(5)
+                elif event.key == pygame.K_5:
+                    self.select_level(5)
         
         elif self.state == GameState.PLAYING:
             if event.type == pygame.KEYDOWN:
@@ -79,6 +83,8 @@ class Game:
                     self.selected_tower_type = 'missile'
                 elif event.key == pygame.K_4:
                     self.selected_tower_type = 'laser'
+                elif event.key == pygame.K_5:
+                    self.selected_tower_type = 'freeze'
                 elif event.key == pygame.K_n:  # 'N' for next wave
                     self.skip_to_next_wave()
             
@@ -318,7 +324,7 @@ class Game:
         
         # Level selection
         font = pygame.font.Font(None, 24)
-        select_text = font.render("Press 1-4 for Level Selection", True, GRAY)
+        select_text = font.render("Press 1-5 for Level Selection", True, GRAY)
         select_rect = select_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 70))
         self.screen.blit(select_text, select_rect)
         
@@ -328,7 +334,8 @@ class Game:
             "1: Forest Path (Beginner)",
             "2: Mountain Pass (Advanced)", 
             "3: Desert Canyon (Expert)",
-            "4: Nightmare Spiral (Master)"
+            "4: Nightmare Spiral (Master)",
+            "5: Frozen Wasteland (Legendary)"
         ]
         
         for i, desc in enumerate(level_descriptions):

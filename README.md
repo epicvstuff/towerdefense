@@ -1,14 +1,15 @@
 # Tower Defense Game
 
-A classic tower defense game built with Python and Pygame, featuring strategic tower placement, multiple levels, and progressive wave-based gameplay.
+A classic tower defense game built with Python and Pygame, featuring strategic tower placement, multiple levels, and progressive wave-based gameplay with complete sprite graphics.
 
 ## 🎮 Game Features
 
-### **Phase 3 Complete: Master-Level Challenge**
-- **4 Unique Levels** with escalating difficulty and unique mechanics
-- **4 Tower Types** with specialized abilities and 3-level upgrade system
+### **Phase 3+ Complete: Ultimate Tower Defense Experience**
+- **5 Unique Levels** with escalating difficulty and legendary endgame challenge
+- **5 Tower Types** including crowd control Freeze Tower with specialized abilities
 - **12 Enemy Types** including special abilities and boss-level threats
-- **40 Progressive Waves** across all levels
+- **50 Progressive Waves** across all levels with ultimate challenge
+- **Complete Sprite System** with 21 custom graphics for professional presentation
 - **Camera Panning System** for level exploration
 - **Advanced Enemy Mechanics** with stealth, berserker rage, and phase abilities
 - **Complete Gameplay Loop** with strategic depth and replayability
@@ -33,13 +34,19 @@ A classic tower defense game built with Python and Pygame, featuring strategic t
    - Fire Rate: 0.8 shots/sec
    - Special: Homing missiles, targets flying enemies
 
-4. **Laser Tower** (80 gold) ⚡ NEW!
+4. **Laser Tower** (80 gold)
    - Damage: 15
    - Range: 120 pixels
    - Fire Rate: 10 shots/sec
    - Special: Piercing shots, targets flying enemies
 
-### Tower Upgrade System ⚡ NEW!
+5. **Freeze Tower** (50 gold) ❄️ NEW!
+   - Damage: 12
+   - Range: 90 pixels
+   - Fire Rate: 2.0 shots/sec
+   - Special: Freeze effect (3s duration, 50% slow, 25px splash radius)
+
+### Tower Upgrade System
 Each tower can be upgraded up to 3 times by clicking on existing towers:
 
 **Upgrade Benefits:**
@@ -47,12 +54,14 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **Range**: +20% → +40% → +60% per level  
 - **Fire Rate**: +25% → +50% → +80% per level
 - **Splash Radius**: +20% → +40% → +60% per level (splash towers)
+- **Freeze Duration**: +1s → +2s → +3s per level (Freeze Tower)
 
 **Upgrade Costs:**
 - **Cannon**: 15 → 25 → 40 gold per level
 - **Machine Gun**: 20 → 35 → 50 gold per level
 - **Missile**: 30 → 50 → 75 gold per level
 - **Laser**: 40 → 65 → 90 gold per level
+- **Freeze**: 25 → 45 → 70 gold per level
 
 **Visual Indicators:**
 - Colored dots above towers show upgrade level
@@ -118,12 +127,19 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **Waves**: 10 waves featuring swarm enemies and elite units
 - **Focus**: Fast-paced action with overlapping wave mechanics
 
-### Level 4: Nightmare Spiral ⚡ NEW!
+### Level 4: Nightmare Spiral
 - **Difficulty**: Master-level challenge
 - **Path**: Complex triple-spiral pattern requiring strategic placement
 - **Waves**: 10 waves introducing all new enemy types and abilities
 - **Focus**: Ultimate test of tower defense mastery with advanced enemy mechanics
 - **Special Features**: Stealth enemies, berserker rage, titan bosses, and phantom units
+
+### Level 5: Frozen Wasteland ❄️ NEW!
+- **Difficulty**: Legendary challenge
+- **Path**: 67-waypoint full circle with multiple chokepoints and branching paths
+- **Waves**: 10 escalating waves ending with 400+ enemies including 6 titans and 3 bosses
+- **Focus**: Ultimate endgame requiring mastery of all 5 tower types, especially Freeze Tower
+- **Special Features**: All enemy types, massive final wave, requires crowd control mastery
 
 ## 🎯 Controls
 
@@ -135,7 +151,7 @@ Each tower can be upgraded up to 3 times by clicking on existing towers:
 - **4**: Select Level 4 (Nightmare Spiral)
 
 ### Gameplay Controls
-- **1, 2, 3, 4**: Select tower type (Cannon, Machine Gun, Missile, Laser)
+- **1, 2, 3, 4, 5**: Select tower type (Cannon, Machine Gun, Missile, Laser, Freeze)
 - **Left Click**: Place selected tower OR upgrade existing tower
 - **Hover**: Show detailed tower information and stats
 - **WASD / Arrow Keys**: Pan camera around the level

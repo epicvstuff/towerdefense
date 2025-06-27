@@ -39,7 +39,8 @@ UPGRADE_COSTS = {
     'cannon': [15, 25, 40],      # Level 1, 2, 3 upgrade costs
     'machine_gun': [20, 35, 50],
     'missile': [30, 50, 75],
-    'laser': [40, 65, 90]
+    'laser': [40, 65, 90],
+    'freeze': [25, 45, 70]       # Freeze tower upgrade costs
 }
 
 # Upgrade multipliers for each stat per level
@@ -89,6 +90,18 @@ TOWER_TYPES = {
         'color': (255, 0, 255),  # Magenta
         'projectile_speed': 500,
         'piercing': True  # Can hit multiple enemies
+    },
+    'freeze': {
+        'cost': 50,
+        'damage': 12,  # Moderate damage
+        'range': 90,
+        'fire_rate': 2.0,
+        'splash_radius': 25,  # Area of effect for freeze
+        'color': (135, 206, 235),  # Sky blue
+        'projectile_speed': 250,
+        'freeze_duration': 3.0,  # Seconds of slow effect
+        'slow_multiplier': 0.5,  # Enemies move at 50% speed
+        'freeze_effect': True  # Special freeze ability
     }
 }
 
@@ -356,6 +369,54 @@ LEVELS = {
             
             # Wave 10: Ultimate nightmare
             {"basic": 50, "fast": 45, "heavy": 35, "flying": 35, "armored": 30, "stealth": 30, "berserker": 20, "phantom": 18, "swarm": 50, "elite": 15, "boss": 2, "titan": 3, "delay": 0.1}
+        ]
+    },
+    5: {
+        'name': 'Frozen Wasteland',
+        'path': [
+            # Multiple branching paths that converge - strategic tower placement crucial
+            # Main path: Winding through the center
+            (0, 7), (1, 7), (2, 6), (3, 5), (4, 4), (5, 3),              # Initial descent
+            (6, 2), (7, 1), (8, 1), (9, 2), (10, 3), (11, 4),            # First curve
+            (12, 5), (13, 6), (14, 7), (15, 8), (16, 9), (17, 10),       # Diagonal climb
+            (18, 11), (19, 12), (19, 13), (18, 14), (17, 14), (16, 13),  # Top right curve
+            
+            # Branch back through middle
+            (15, 12), (14, 11), (13, 10), (12, 9), (11, 8), (10, 7),     # Return path
+            (9, 6), (8, 5), (7, 4), (6, 3), (5, 4), (4, 5),              # Lower curve
+            (3, 6), (2, 7), (1, 8), (0, 9), (0, 10), (1, 11),            # Left side
+            
+            # Final challenging section
+            (2, 12), (3, 13), (4, 14), (5, 14), (6, 13), (7, 12),        # Bottom weave
+            (8, 11), (9, 10), (10, 11), (11, 12), (12, 13), (13, 14),    # Complex weave
+            (14, 13), (15, 14), (16, 14), (17, 13), (18, 12), (19, 11),  # Final approach
+            
+            # Tricky ending with tight curves
+            (19, 10), (18, 9), (17, 8), (16, 7), (15, 6), (14, 5),       # Descent
+            (13, 4), (12, 3), (11, 2), (10, 1), (9, 0), (8, 0),          # Top edge
+            (7, 0), (6, 1), (5, 2), (4, 3), (3, 4), (2, 5),              # Final curve
+            (1, 6), (0, 7)  # Exit at start position - full circle challenge
+        ],
+        'waves': [
+            # Wave 1-2: Ice-themed introduction with freeze-resistant enemies
+            {"basic": 40, "fast": 30, "heavy": 20, "flying": 15, "delay": 0.6},
+            {"basic": 45, "fast": 35, "heavy": 25, "flying": 20, "armored": 10, "delay": 0.5},
+            
+            # Wave 3-4: Swarm tactics require crowd control
+            {"basic": 35, "fast": 40, "heavy": 20, "flying": 18, "armored": 12, "swarm": 50, "delay": 0.5},
+            {"basic": 40, "fast": 45, "heavy": 25, "flying": 22, "armored": 15, "swarm": 60, "stealth": 8, "delay": 0.4},
+            
+            # Wave 5-6: Advanced enemies test all tower types
+            {"basic": 30, "fast": 35, "heavy": 30, "flying": 25, "armored": 20, "swarm": 45, "stealth": 12, "berserker": 10, "phantom": 6, "delay": 0.4},
+            {"basic": 35, "fast": 40, "heavy": 35, "flying": 30, "armored": 25, "swarm": 50, "stealth": 15, "berserker": 12, "phantom": 8, "elite": 5, "delay": 0.3},
+            
+            # Wave 7-8: Titan-level threats
+            {"basic": 40, "fast": 35, "heavy": 30, "flying": 28, "armored": 22, "swarm": 40, "stealth": 18, "berserker": 15, "phantom": 10, "elite": 8, "titan": 2, "delay": 0.3},
+            {"basic": 45, "fast": 40, "heavy": 35, "flying": 32, "armored": 28, "swarm": 45, "stealth": 20, "berserker": 18, "phantom": 12, "elite": 10, "titan": 3, "boss": 1, "delay": 0.2},
+            
+            # Wave 9-10: Frozen hell - ultimate challenge
+            {"basic": 50, "fast": 45, "heavy": 40, "flying": 35, "armored": 30, "swarm": 60, "stealth": 25, "berserker": 20, "phantom": 15, "elite": 12, "titan": 4, "boss": 2, "delay": 0.2},
+            {"basic": 60, "fast": 55, "heavy": 50, "flying": 45, "armored": 40, "swarm": 80, "stealth": 35, "berserker": 25, "phantom": 20, "elite": 18, "titan": 6, "boss": 3, "delay": 0.1}  # Frozen apocalypse
         ]
     }
 }

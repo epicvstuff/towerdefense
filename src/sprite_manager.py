@@ -22,6 +22,7 @@ class SpriteManager:
         self._load_or_create_sprite('machine_gun_tower', (40, 40), GRAY)
         self._load_or_create_sprite('missile_tower', (40, 40), BLUE)
         self._load_or_create_sprite('laser_tower', (40, 40), (255, 0, 255))
+        self._load_or_create_sprite('freeze_tower', (40, 40), (135, 206, 235))
         
         # Enemy sprites
         self._load_or_create_sprite('basic_enemy', (30, 30), RED)
@@ -33,14 +34,17 @@ class SpriteManager:
         self._load_or_create_sprite('elite_enemy', (44, 44), (255, 140, 0))
         self._load_or_create_sprite('swarm_enemy', (16, 16), (0, 255, 255))
         
-        # New enemy sprites for Level 4
+        # New enemy sprites for Level 5
         self._load_or_create_sprite('stealth_enemy', (32, 32), (64, 64, 64))
         self._load_or_create_sprite('berserker_enemy', (36, 36), (255, 69, 0))
         self._load_or_create_sprite('titan_enemy', (70, 70), (139, 69, 19))
         self._load_or_create_sprite('phantom_enemy', (28, 28), (148, 0, 211))
         
         # Projectile sprites
-        self._load_or_create_sprite('bullet', (6, 6), WHITE)
+        self._load_or_create_sprite('bullet', (8, 8), WHITE)
+        self._load_or_create_sprite('piercing', (8, 8), (255, 0, 255))  # Magenta for laser
+        self._load_or_create_sprite('homing', (8, 8), YELLOW)
+        self._load_or_create_sprite('freeze', (8, 8), (135, 206, 235))  # Light blue for freeze
         self._load_or_create_sprite('missile', (8, 8), YELLOW)
         self._load_or_create_sprite('laser_beam', (6, 6), (255, 0, 255))
         self._load_or_create_sprite('explosion', (30, 30), ORANGE)
@@ -56,11 +60,14 @@ class SpriteManager:
         if os.path.exists(file_path):
             try:
                 # Load from file
-                sprite = pygame.image.load(file_path).convert_alpha()
+                sprite = pygame.image.load(file_path)
+                # Only convert_alpha if display is initialized
+                if pygame.get_init() and pygame.display.get_surface():
+                    sprite = sprite.convert_alpha()
                 sprite = pygame.transform.scale(sprite, size)
                 self.sprites[name] = sprite
                 return
-            except pygame.error:
+            except pygame.error as e:
                 pass  # Fall back to creating placeholder
         
         # Create placeholder sprite
@@ -203,9 +210,11 @@ class SpriteManager:
     def get_projectile_sprite(self, projectile_type: str) -> Optional[pygame.Surface]:
         """Get projectile sprite by type"""
         if projectile_type == 'homing':
-            return self.get_sprite('missile')
+            return self.get_sprite('homing')
         elif projectile_type == 'piercing':
-            return self.get_sprite('laser_beam')
+            return self.get_sprite('piercing')
+        elif projectile_type == 'freeze':
+            return self.get_sprite('freeze')
         else:
             return self.get_sprite('bullet')
     
@@ -213,6 +222,56 @@ class SpriteManager:
         """Reload all sprites (useful for development)"""
         self.sprites.clear()
         self._load_default_sprites()
+    
+    def ensure_sprites_loaded(self) -> None:
+        """Ensure sprites are properly loaded after display initialization"""
+        # Check if we have placeholder sprites that could be replaced with real ones
+        for name in list(self.sprites.keys()):
+            if name.endswith('_tower') or name.endswith('_enemy') or name in ['freeze', 'bullet', 'missile', 'laser_beam']:
+                file_path = os.path.join(self.sprite_path, f"{name}.png")
+                if os.path.exists(file_path):
+                    # Try to reload this sprite now that display is initialized
+                    try:
+                        sprite = pygame.image.load(file_path).convert_alpha()
+                        # Get the expected size for this sprite type
+                        if name.endswith('_tower'):
+                            size = (40, 40)
+                        elif name.endswith('_enemy'):
+                            # Get size based on enemy type
+                            if 'swarm' in name:
+                                size = (16, 16)
+                            elif 'titan' in name:
+                                size = (70, 70)
+                            elif 'boss' in name:
+                                size = (60, 60)
+                            elif 'elite' in name:
+                                size = (44, 44)
+                            elif 'heavy' in name:
+                                size = (40, 40)
+                            elif 'armored' in name:
+                                size = (36, 36)
+                            elif 'berserker' in name:
+                                size = (36, 36)
+                            elif 'stealth' in name:
+                                size = (32, 32)
+                            elif 'basic' in name:
+                                size = (30, 30)
+                            elif 'flying' in name or 'phantom' in name:
+                                size = (28, 28)
+                            elif 'fast' in name:
+                                size = (24, 24)
+                            else:
+                                size = (30, 30)  # default
+                        else:  # projectiles
+                            if name == 'laser_beam':
+                                size = (6, 6)
+                            else:
+                                size = (8, 8)
+                        
+                        sprite = pygame.transform.scale(sprite, size)
+                        self.sprites[name] = sprite
+                    except pygame.error as e:
+                        pass  # Keep placeholder
 
 # Global sprite manager instance
 sprite_manager = SpriteManager() 

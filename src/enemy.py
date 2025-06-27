@@ -50,6 +50,11 @@ class Enemy:
         # Store base speed for berserker ability
         self.base_speed = self.speed
         
+        # Freeze effect tracking
+        self.is_frozen = False
+        self.freeze_timer = 0.0
+        self.freeze_slow_multiplier = 1.0
+        
         # Position and movement
         self.path_progress = 0.0  # 0.0 to 1.0 along the path
         start_pos = level.get_path_start()
@@ -70,6 +75,22 @@ class Enemy:
             self.is_alive = False
             return True
         return False
+    
+    def apply_freeze_effect(self, duration: float, slow_multiplier: float) -> None:
+        """Apply freeze effect to slow down the enemy"""
+        self.is_frozen = True
+        self.freeze_timer = duration
+        self.freeze_slow_multiplier = slow_multiplier
+    
+    def get_current_speed(self) -> float:
+        """Get current speed accounting for all effects"""
+        current_speed = self.speed
+        
+        # Apply freeze effect
+        if self.is_frozen:
+            current_speed *= self.freeze_slow_multiplier
+        
+        return current_speed
     
     def update(self, dt: float) -> None:
         """Update enemy position and state"""
@@ -111,8 +132,16 @@ class Enemy:
                     self.is_phased = True
                     self.phase_timer = 0.0
         
-        # Move along path
-        distance_to_move = self.speed * dt
+        # Handle freeze effect
+        if self.is_frozen:
+            self.freeze_timer -= dt
+            if self.freeze_timer <= 0:
+                self.is_frozen = False
+                self.freeze_slow_multiplier = 1.0
+        
+        # Move along path using current speed (accounting for all effects)
+        current_speed = self.get_current_speed()
+        distance_to_move = current_speed * dt
         new_x, new_y, new_progress = self.level.get_next_position_on_path(self.path_progress, distance_to_move)
         
         self.x = new_x
@@ -210,6 +239,10 @@ class Enemy:
         # Titan indicator (brown outline for massive enemies)
         if self.titan:
             pygame.draw.circle(screen, (139, 69, 19), (int(screen_x), int(screen_y)), self.size + 4, 4)
+        
+        # Freeze indicator (blue outline when frozen)
+        if self.is_frozen:
+            pygame.draw.circle(screen, (135, 206, 235), (int(screen_x), int(screen_y)), self.size + 1, 2)
 
 class EnemyManager:
     """Manages all enemies and wave spawning"""

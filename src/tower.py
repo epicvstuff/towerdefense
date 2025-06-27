@@ -12,7 +12,8 @@ class Projectile:
     """Projectile fired by towers"""
     
     def __init__(self, start_x: float, start_y: float, target_x: float, target_y: float, 
-                 damage: int, speed: float, splash_radius: float = 0, homing: bool = False, piercing: bool = False):
+                 damage: int, speed: float, splash_radius: float = 0, homing: bool = False, piercing: bool = False,
+                 freeze_duration: float = 0.0, freeze_slow_multiplier: float = 1.0):
         self.x = start_x
         self.y = start_y
         self.target_x = target_x
@@ -22,6 +23,8 @@ class Projectile:
         self.splash_radius = splash_radius
         self.homing = homing
         self.piercing = piercing
+        self.freeze_duration = freeze_duration
+        self.freeze_slow_multiplier = freeze_slow_multiplier
         self.hit_enemies = set()  # Track enemies already hit (for piercing)
         
         # Calculate direction
@@ -88,7 +91,11 @@ class Projectile:
         # Damage primary target
         primary_enemy.take_damage(self.damage)
         
-        # Handle splash damage
+        # Apply freeze effect if this projectile has freeze
+        if self.freeze_duration > 0:
+            primary_enemy.apply_freeze_effect(self.freeze_duration, self.freeze_slow_multiplier)
+        
+        # Handle splash damage and freeze
         if self.splash_radius > 0:
             for enemy in all_enemies:
                 if enemy != primary_enemy and enemy.is_alive:
@@ -102,6 +109,10 @@ class Projectile:
                         damage_ratio = 1.0 - (distance / self.splash_radius)
                         splash_damage = int(self.damage * damage_ratio * 0.5)  # 50% splash damage
                         enemy.take_damage(splash_damage)
+                        
+                        # Apply freeze effect to splash targets
+                        if self.freeze_duration > 0:
+                            enemy.apply_freeze_effect(self.freeze_duration, self.freeze_slow_multiplier)
         
         # Only destroy projectile if not piercing
         if not self.piercing:
@@ -120,6 +131,8 @@ class Projectile:
                     sprite = sprite_manager.get_projectile_sprite('piercing')
                 elif self.homing:
                     sprite = sprite_manager.get_projectile_sprite('homing')
+                elif self.freeze_duration > 0:
+                    sprite = sprite_manager.get_projectile_sprite('freeze')
                 else:
                     sprite = sprite_manager.get_projectile_sprite('bullet')
                 
@@ -178,6 +191,11 @@ class Tower:
         self.homing = self.base_stats.get('homing', False)
         self.piercing = self.base_stats.get('piercing', False)
         
+        # Freeze tower special stats
+        self.freeze_duration = self.base_stats.get('freeze_duration', 0.0)
+        self.freeze_slow_multiplier = self.base_stats.get('slow_multiplier', 1.0)
+        self.freeze_effect = self.base_stats.get('freeze_effect', False)
+        
         # Apply upgrade multipliers
         if self.upgrade_level > 0:
             level_index = self.upgrade_level - 1  # Convert to 0-based index
@@ -194,6 +212,10 @@ class Tower:
             # Apply splash radius multiplier (if tower has splash)
             if self.splash_radius > 0:
                 self.splash_radius = int(self.splash_radius * UPGRADE_MULTIPLIERS['splash_radius'][level_index])
+            
+            # Upgrade freeze duration for freeze towers
+            if self.freeze_effect and self.freeze_duration > 0:
+                self.freeze_duration = self.freeze_duration * UPGRADE_MULTIPLIERS['fire_rate'][level_index]
         
         # Update shot cooldown based on new fire rate
         self.shot_cooldown = 1.0 / self.fire_rate
@@ -305,7 +327,10 @@ class Tower:
         
         target_x, target_y = self.target_enemy.get_position()
         
-        # Create projectile
+        # Create projectile with freeze effects if this is a freeze tower
+        freeze_duration = self.freeze_duration if self.freeze_effect else 0.0
+        freeze_multiplier = self.freeze_slow_multiplier if self.freeze_effect else 1.0
+        
         projectile = Projectile(
             self.x, self.y,
             target_x, target_y,
@@ -313,7 +338,9 @@ class Tower:
             self.projectile_speed,
             self.splash_radius,
             self.homing,
-            self.piercing
+            self.piercing,
+            freeze_duration,
+            freeze_multiplier
         )
         
         # Set target for homing missiles
