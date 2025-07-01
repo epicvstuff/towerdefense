@@ -18,6 +18,28 @@
 - **Interactive UI**: Skip wave button and visual countdown timer
 - **Master-Level Mechanics**: Special enemy abilities requiring strategic tower selection
 
+### ✅ Phase 2.5: Visual Enhancement (COMPLETED)
+**Level 1 (Forest Path) - Comprehensive Forest Theme:**
+- Complete tile-based background system with grass and forest edge tiles
+- Procedurally placed trees (15% density) and rocks (5% density) avoiding path interference
+- Multi-layered dirt path rendering with texture and depth
+- 5 forest sprites: grass_tile, forest_edge, dirt_path, tree, rock
+
+**Level 2 (Mountain Pass) - Rugged Mountain Theme:**
+- Height-stratified terrain with cliff faces (20% at top), mountain rock (15% mid), stone base
+- Boulder decorations (8-12% density, higher at lower elevations)
+- Mountain peak decorations (3% density, upper 40% only)
+- Gravel mountain path distinct from forest dirt texture
+- 6 mountain sprites: stone_tile, mountain_rock, cliff_face, mountain_path, boulder, mountain_peak
+
+**Shared Enhancement Features:**
+- Enhanced start/end markers with borders, shadows, and directional symbols
+- Level-specific path rendering with appropriate material textures
+- Smart decoration placement system avoiding 3x3 path buffer zones
+- Viewport culling for optimal 60 FPS performance
+- Graceful fallback rendering if sprite files are missing
+- Background sprite system with procedural placeholder generation
+
 ### 🔮 Phase 3: Polish & Features (PLANNED)
 - Speed controls and enhanced UI
 - Statistics and high score system
@@ -229,9 +251,8 @@ game/
 │   └── audio.py              # 🔊 Audio system [PLACEHOLDER - Phase 3]
 │
 └── assets/                   # 🎨 Game Assets [DOCUMENTED]
-    ├── sprites/              # 🖼️ Graphics [PLACEHOLDER]
-    ├── sounds/               # 🎵 Audio [PLACEHOLDER]
-    └── levels/               # 🌍 Level data [DOCUMENTED]
+    ├── sprites/              # 🖼️ Graphics [ENHANCED - Forest backgrounds]
+    └── sounds/               # 🎵 Audio [PLACEHOLDER]
 ```
 
 ## 🎯 Balance & Tuning

@@ -308,10 +308,8 @@ game/
     │   ├── *_tower.png (5 files)  # 🏰 Tower sprites [✅ COMPLETE]
     │   ├── *_enemy.png (12 files) # 👾 Enemy sprites [✅ COMPLETE]
     │   └── *.png (4 projectiles)  # 💥 Projectile sprites [✅ COMPLETE]
-    ├── sounds/                     # 🎵 Audio files [📋 DOCUMENTED]
-    │   └── README.md               # 📝 Audio documentation [✅ COMPLETE]
-    └── levels/                     # 🌍 Level data files [📋 DOCUMENTED]
-        └── README.md               # 📝 Levels documentation [✅ COMPLETE]
+    └── sounds/                     # 🎵 Audio files [📋 DOCUMENTED]
+        └── README.md               # 📝 Audio documentation [✅ COMPLETE]
 ```
 
 ### System Architecture
