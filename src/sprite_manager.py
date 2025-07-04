@@ -67,6 +67,27 @@ class SpriteManager:
         self._load_or_create_sprite('mountain_path', (40, 40), (101, 67, 33))
         self._load_or_create_sprite('boulder', (48, 40), (90, 90, 90))
         self._load_or_create_sprite('mountain_peak', (32, 48), (70, 70, 70))
+        
+        # Background sprites for desert level (Level 3)
+        self._load_or_create_sprite('sand_tile', (40, 40), (194, 178, 128))
+        self._load_or_create_sprite('canyon_wall', (40, 40), (160, 82, 45))
+        self._load_or_create_sprite('desert_path', (40, 40), (222, 184, 135))
+        self._load_or_create_sprite('desert_rock', (24, 20), (139, 119, 101))
+        self._load_or_create_sprite('cactus', (24, 40), (34, 139, 34))
+        self._load_or_create_sprite('sand_dune', (48, 32), (210, 190, 140))
+        self._load_or_create_sprite('sandstone_tile', (40, 40), (238, 203, 173))
+        
+        # Background sprites for nightmare level (Level 4)
+        self._load_or_create_sprite('obsidian_tile', (40, 40), (30, 30, 30))
+        self._load_or_create_sprite('corrupted_stone', (40, 40), (50, 45, 60))
+        self._load_or_create_sprite('nightmare_path', (40, 40), (45, 35, 25))
+        self._load_or_create_sprite('bone_tile', (40, 40), (200, 185, 170))
+        self._load_or_create_sprite('dark_earth', (40, 40), (25, 20, 15))
+        self._load_or_create_sprite('skull', (32, 28), (255, 245, 230))  # Larger and brighter
+        self._load_or_create_sprite('twisted_tree', (40, 56), (80, 50, 25))  # Larger and more visible
+        self._load_or_create_sprite('dark_crystal', (24, 36), (120, 60, 160))  # Larger and more vibrant
+        self._load_or_create_sprite('tombstone', (24, 32), (120, 120, 130))  # Larger and lighter
+        self._load_or_create_sprite('bone_pile', (36, 24), (240, 220, 200))  # Larger and brighter
     
     def _load_or_create_sprite(self, name: str, size: Tuple[int, int], color: Tuple[int, int, int]) -> None:
         """Load sprite from file or create a placeholder if file doesn't exist"""
@@ -294,6 +315,259 @@ class SpriteManager:
             detail_color = (max(0, color[0] - 20), max(0, color[1] - 20), max(0, color[2] - 20))
             pygame.draw.circle(sprite, detail_color, (center_x - 6, height - 15), 2)
             pygame.draw.circle(sprite, detail_color, (center_x + 4, height - 12), 1)
+            
+        elif 'sand' in name or 'desert' in name or 'canyon' in name:
+            # Desert terrain tiles
+            pygame.draw.rect(sprite, color, (0, 0, width, height))
+            if 'sand' in name:
+                # Add sand texture with small dots
+                for i in range(25):
+                    x = hash((name, i)) % (width - 2)
+                    y = hash((name, i, 'y')) % (height - 2)
+                    darker = (max(0, color[0] - 10), max(0, color[1] - 10), max(0, color[2] - 10))
+                    lighter = (min(255, color[0] + 15), min(255, color[1] + 15), min(255, color[2] + 15))
+                    if hash((name, i, 'shade')) % 3 == 0:
+                        pygame.draw.circle(sprite, darker, (x, y), 1)
+                    elif hash((name, i, 'shade')) % 3 == 1:
+                        pygame.draw.circle(sprite, lighter, (x, y), 1)
+            elif 'canyon' in name:
+                # Add canyon wall texture with horizontal lines
+                for y in range(0, height, 8):
+                    line_color = (max(0, color[0] - 15), max(0, color[1] - 15), max(0, color[2] - 15))
+                    pygame.draw.line(sprite, line_color, (0, y), (width, y), 2)
+                # Add rocky details
+                for i in range(10):
+                    x = hash((name, i)) % (width - 4)
+                    y = hash((name, i, 'y')) % (height - 4)
+                    rock_color = (max(0, color[0] - 30), max(0, color[1] - 30), max(0, color[2] - 30))
+                    pygame.draw.rect(sprite, rock_color, (x, y, 3, 3))
+            elif 'desert_path' in name:
+                # Add small stones and sandy texture
+                for i in range(12):
+                    x = hash((name, i)) % (width - 4)
+                    y = hash((name, i, 'y')) % (height - 4)
+                    stone_color = (max(0, color[0] - 20), max(0, color[1] - 20), max(0, color[2] - 20))
+                    pygame.draw.ellipse(sprite, stone_color, (x, y, 4, 3))
+                    
+        elif name == 'cactus':
+            # Cactus decoration
+            center_x, center_y = width // 2, height // 2
+            # Main cactus body
+            cactus_color = (34, 139, 34)
+            pygame.draw.rect(sprite, cactus_color, (center_x - 3, center_y - 8, 6, 16))
+            # Cactus arms
+            pygame.draw.rect(sprite, cactus_color, (center_x - 8, center_y - 4, 5, 3))
+            pygame.draw.rect(sprite, cactus_color, (center_x + 3, center_y - 2, 5, 3))
+            # Spikes
+            spike_color = (255, 255, 255)
+            for i in range(6):
+                y_pos = center_y - 6 + i * 2
+                pygame.draw.circle(sprite, spike_color, (center_x - 2, y_pos), 1)
+                pygame.draw.circle(sprite, spike_color, (center_x + 2, y_pos), 1)
+                
+        elif name == 'desert_rock':
+            # Desert rock formation
+            center_x, center_y = width // 2, height // 2
+            # Main rock
+            pygame.draw.ellipse(sprite, color, (center_x - 8, center_y - 4, 16, 8))
+            # Additional rock layers
+            lighter = (min(255, color[0] + 20), min(255, color[1] + 20), min(255, color[2] + 20))
+            pygame.draw.ellipse(sprite, lighter, (center_x - 6, center_y - 2, 12, 4))
+            # Shadow
+            darker = (max(0, color[0] - 30), max(0, color[1] - 30), max(0, color[2] - 30))
+            pygame.draw.ellipse(sprite, darker, (center_x - 5, center_y + 2, 8, 3))
+            
+        elif name == 'sand_dune':
+            # Sand dune decoration
+            center_x, center_y = width // 2, height // 2
+            # Main dune shape
+            pygame.draw.ellipse(sprite, color, (0, center_y - 8, width, 16))
+            # Dune ridge
+            ridge_color = (min(255, color[0] + 15), min(255, color[1] + 15), min(255, color[2] + 15))
+            pygame.draw.ellipse(sprite, ridge_color, (width//6, center_y - 4, 2*width//3, 8))
+            # Wind patterns
+            for i in range(3):
+                pattern_color = (max(0, color[0] - 10), max(0, color[1] - 10), max(0, color[2] - 10))
+                y_pos = center_y - 2 + i * 2
+                pygame.draw.line(sprite, pattern_color, (width//4, y_pos), (3*width//4, y_pos), 1)
+        
+        elif 'obsidian' in name or 'corrupted' in name or 'nightmare' in name or 'bone' in name or 'dark' in name:
+            # Nightmare terrain tiles
+            pygame.draw.rect(sprite, color, (0, 0, width, height))
+            if 'obsidian' in name:
+                # Add volcanic glass texture with sharp patterns
+                for i in range(15):
+                    x = hash((name, i)) % (width - 2)
+                    y = hash((name, i, 'y')) % (height - 2)
+                    if hash((name, i, 'sharp')) % 4 == 0:
+                        # Sharp reflective patches
+                        lighter = (min(255, color[0] + 40), min(255, color[1] + 40), min(255, color[2] + 40))
+                        pygame.draw.circle(sprite, lighter, (x, y), 2)
+                    elif hash((name, i, 'sharp')) % 4 == 1:
+                        # Dark cracks
+                        darker = (max(0, color[0] - 15), max(0, color[1] - 15), max(0, color[2] - 15))
+                        pygame.draw.line(sprite, darker, (x, y), (x+3, y+3), 1)
+            elif 'corrupted' in name:
+                # Add corruption with purple-tinged veins
+                for i in range(8):
+                    x = hash((name, i)) % (width - 6)
+                    y = hash((name, i, 'y')) % (height - 6)
+                    corruption_color = (max(0, color[0] - 20), max(0, color[1] - 25), min(255, color[2] + 20))
+                    pygame.draw.ellipse(sprite, corruption_color, (x, y, 6, 3))
+                    # Add spreading tendrils
+                    pygame.draw.line(sprite, corruption_color, (x+3, y+1), (x+7, y+2), 1)
+                    pygame.draw.line(sprite, corruption_color, (x+3, y+1), (x+2, y+4), 1)
+            elif 'bone' in name:
+                # Add bone fragments scattered around
+                for i in range(12):
+                    x = hash((name, i)) % (width - 4)
+                    y = hash((name, i, 'y')) % (height - 4)
+                    bone_fragment = (min(255, color[0] - 20), min(255, color[1] - 20), min(255, color[2] - 20))
+                    pygame.draw.ellipse(sprite, bone_fragment, (x, y, 4, 2))
+                    # Add shadowing
+                    shadow = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
+                    pygame.draw.ellipse(sprite, shadow, (x+1, y+1, 3, 1))
+            elif 'dark_earth' in name:
+                # Add very dark, sinister earth texture
+                for i in range(20):
+                    x = hash((name, i)) % (width - 2)
+                    y = hash((name, i, 'y')) % (height - 2)
+                    if hash((name, i, 'type')) % 3 == 0:
+                        # Darker patches
+                        darker = (max(0, color[0] - 8), max(0, color[1] - 8), max(0, color[2] - 8))
+                        pygame.draw.circle(sprite, darker, (x, y), 1)
+                    elif hash((name, i, 'type')) % 3 == 1:
+                        # Slight reddish tint (blood?)
+                        blood_tint = (min(255, color[0] + 5), max(0, color[1] - 3), max(0, color[2] - 3))
+                        pygame.draw.circle(sprite, blood_tint, (x, y), 1)
+                        
+        elif name == 'skull':
+            # Skull decoration - larger and more prominent
+            center_x, center_y = width // 2, height // 2
+            # Main skull shape (larger)
+            pygame.draw.ellipse(sprite, color, (center_x - 12, center_y - 8, 24, 16))
+            # Add skull outline for contrast
+            pygame.draw.ellipse(sprite, (200, 200, 200), (center_x - 12, center_y - 8, 24, 16), 2)
+            # Eye sockets (larger and more prominent)
+            eye_color = (10, 10, 10)
+            pygame.draw.circle(sprite, eye_color, (center_x - 5, center_y - 3), 4)
+            pygame.draw.circle(sprite, eye_color, (center_x + 5, center_y - 3), 4)
+            # Glowing red eyes for nightmare effect
+            pygame.draw.circle(sprite, (150, 0, 0), (center_x - 5, center_y - 3), 2)
+            pygame.draw.circle(sprite, (150, 0, 0), (center_x + 5, center_y - 3), 2)
+            # Nasal cavity (larger)
+            pygame.draw.ellipse(sprite, eye_color, (center_x - 2, center_y + 1, 4, 6))
+            # Mouth (wider)
+            pygame.draw.line(sprite, eye_color, (center_x - 6, center_y + 6), (center_x + 6, center_y + 6), 2)
+            # Teeth (more prominent)
+            for i in range(5):
+                x_pos = center_x - 6 + i * 3
+                pygame.draw.line(sprite, eye_color, (x_pos, center_y + 6), (x_pos, center_y + 10), 2)
+                
+        elif name == 'twisted_tree':
+            # Twisted dead tree - larger and more dramatic
+            center_x, center_y = width // 2, height // 2
+            # Main twisted trunk (thicker and taller)
+            trunk_color = (80, 50, 25)
+            pygame.draw.rect(sprite, trunk_color, (center_x - 4, center_y + 8, 8, 20))
+            # Add trunk outline for visibility
+            pygame.draw.rect(sprite, (60, 40, 20), (center_x - 4, center_y + 8, 8, 20), 2)
+            # Twisted branches (thicker and more dramatic)
+            branch_color = (60, 35, 15)
+            # Left branch (twisted, thicker)
+            pygame.draw.line(sprite, branch_color, (center_x - 4, center_y + 4), (center_x - 12, center_y - 4), 4)
+            pygame.draw.line(sprite, branch_color, (center_x - 12, center_y - 4), (center_x - 16, center_y - 12), 3)
+            # Right branch (twisted, thicker)
+            pygame.draw.line(sprite, branch_color, (center_x + 4, center_y + 4), (center_x + 14, center_y - 8), 4)
+            pygame.draw.line(sprite, branch_color, (center_x + 14, center_y - 8), (center_x + 12, center_y - 16), 3)
+            # Top branch (withered but prominent)
+            pygame.draw.line(sprite, branch_color, (center_x, center_y - 16), (center_x - 6, center_y - 24), 3)
+            pygame.draw.line(sprite, branch_color, (center_x, center_y - 16), (center_x + 8, center_y - 22), 3)
+            # Add some gnarled texture
+            pygame.draw.circle(sprite, (40, 25, 10), (center_x - 2, center_y + 12), 3)
+            pygame.draw.circle(sprite, (40, 25, 10), (center_x + 1, center_y + 18), 2)
+            # Dead leaves or thorns
+            for i in range(4):
+                x = center_x - 8 + i * 4
+                pygame.draw.circle(sprite, (100, 60, 30), (x, center_y - 2), 1)
+            
+        elif name == 'dark_crystal':
+            # Dark magical crystal - larger and more mystical
+            center_x, center_y = width // 2, height // 2
+            # Crystal base (larger)
+            crystal_color = (120, 60, 160)
+            points = [(center_x, center_y - 14), (center_x - 10, center_y + 8), (center_x + 10, center_y + 8)]
+            pygame.draw.polygon(sprite, crystal_color, points)
+            # Add crystal outline for prominence
+            pygame.draw.polygon(sprite, (160, 100, 200), points, 3)
+            # Inner crystal core
+            inner_points = [(center_x, center_y - 10), (center_x - 6, center_y + 4), (center_x + 6, center_y + 4)]
+            pygame.draw.polygon(sprite, (180, 120, 220), inner_points)
+            # Crystal facets (more prominent)
+            highlight_color = (220, 180, 255)
+            pygame.draw.line(sprite, highlight_color, (center_x, center_y - 14), (center_x, center_y + 8), 3)
+            pygame.draw.line(sprite, highlight_color, (center_x - 6, center_y - 4), (center_x + 6, center_y - 4), 2)
+            pygame.draw.line(sprite, highlight_color, (center_x - 3, center_y + 2), (center_x + 3, center_y + 2), 2)
+            # Magical glow effect (larger)
+            glow_color = (140, 80, 180)
+            for i in range(3):
+                radius = 4 + i * 2
+                alpha_glow = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+                pygame.draw.circle(alpha_glow, (*glow_color, 60 - i * 20), (radius, radius), radius)
+                sprite.blit(alpha_glow, (center_x - radius, center_y - radius))
+            # Sparkling effect
+            sparkle_points = [(center_x - 4, center_y - 8), (center_x + 5, center_y - 6), (center_x - 2, center_y + 2), (center_x + 3, center_y + 4)]
+            for point in sparkle_points:
+                pygame.draw.circle(sprite, (255, 255, 255), point, 1)
+            
+        elif name == 'tombstone':
+            # Tombstone - larger and more ominous
+            center_x, center_y = width // 2, height // 2
+            # Main tombstone (larger)
+            pygame.draw.rect(sprite, color, (center_x - 8, center_y - 12, 16, 24))
+            # Rounded top (larger)
+            pygame.draw.circle(sprite, color, (center_x, center_y - 12), 8)
+            # Add outline for visibility
+            pygame.draw.rect(sprite, (160, 160, 170), (center_x - 8, center_y - 12, 16, 24), 2)
+            pygame.draw.circle(sprite, (160, 160, 170), (center_x, center_y - 12), 8, 2)
+            # Weathering marks (more prominent)
+            weather_color = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
+            pygame.draw.line(sprite, weather_color, (center_x - 4, center_y - 8), (center_x + 4, center_y - 8), 2)
+            pygame.draw.line(sprite, weather_color, (center_x - 6, center_y - 4), (center_x + 6, center_y - 4), 2)
+            pygame.draw.line(sprite, weather_color, (center_x - 4, center_y), (center_x + 4, center_y), 2)
+            pygame.draw.line(sprite, weather_color, (center_x - 6, center_y + 4), (center_x + 6, center_y + 4), 2)
+            # Add cross symbol
+            pygame.draw.line(sprite, weather_color, (center_x, center_y - 6), (center_x, center_y + 2), 3)
+            pygame.draw.line(sprite, weather_color, (center_x - 3, center_y - 3), (center_x + 3, center_y - 3), 3)
+            
+        elif name == 'bone_pile':
+            # Pile of bones - larger and more gruesome
+            center_x, center_y = width // 2, height // 2
+            # Base bone pile (larger)
+            pygame.draw.ellipse(sprite, color, (0, center_y - 6, width, 12))
+            # Add pile outline for visibility
+            pygame.draw.ellipse(sprite, (200, 180, 160), (0, center_y - 6, width, 12), 2)
+            # Individual bones (larger and more detailed)
+            bone_color = (min(255, color[0] - 20), min(255, color[1] - 20), min(255, color[2] - 20))
+            # Horizontal bones (larger)
+            pygame.draw.ellipse(sprite, bone_color, (center_x - 14, center_y - 2, 28, 6))
+            pygame.draw.ellipse(sprite, bone_color, (center_x - 10, center_y + 2, 20, 4))
+            pygame.draw.ellipse(sprite, bone_color, (center_x - 12, center_y - 6, 24, 4))
+            # Vertical bones
+            pygame.draw.ellipse(sprite, bone_color, (center_x + 4, center_y - 8, 6, 16))
+            pygame.draw.ellipse(sprite, bone_color, (center_x - 8, center_y - 4, 4, 12))
+            # Bone ends (joints) - larger and more prominent
+            joint_color = (max(0, color[0] - 40), max(0, color[1] - 40), max(0, color[2] - 40))
+            pygame.draw.circle(sprite, joint_color, (center_x - 14, center_y), 4)
+            pygame.draw.circle(sprite, joint_color, (center_x + 14, center_y), 4)
+            pygame.draw.circle(sprite, joint_color, (center_x + 6, center_y - 8), 3)
+            pygame.draw.circle(sprite, joint_color, (center_x - 6, center_y - 4), 3)
+            pygame.draw.circle(sprite, joint_color, (center_x, center_y + 4), 3)
+            # Add some scattered smaller bones
+            for i in range(6):
+                x = center_x - 12 + i * 4
+                y = center_y - 2 + (i % 3) * 2
+                pygame.draw.circle(sprite, joint_color, (x, y), 1)
             
         else:
             # Default placeholder

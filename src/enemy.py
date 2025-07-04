@@ -20,7 +20,16 @@ class Enemy:
         stats = ENEMY_TYPES[enemy_type]
         self.max_health = stats['health']
         self.health = self.max_health
-        self.speed = stats['speed']
+        base_speed = stats['speed']
+        
+        # Apply level-specific speed multipliers
+        level_speed_multipliers = {
+            4: 1.4,  # Nightmare Spiral: 40% faster enemies for increased challenge
+        }
+        
+        speed_multiplier = level_speed_multipliers.get(level.level_id, 1.0)
+        self.speed = base_speed * speed_multiplier
+        
         self.reward = stats['reward']
         self.color = stats['color']
         self.size = stats['size']
