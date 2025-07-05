@@ -198,6 +198,8 @@ class Level:
             self._generate_desert_background()
         elif self.level_id == 4:  # Nightmare Spiral
             self._generate_nightmare_background()
+        elif self.level_id == 5:  # Frozen Wasteland
+            self._generate_frozen_background()
         else:
             # Default background for other levels (for now)
             self._generate_default_background()
@@ -585,6 +587,118 @@ class Level:
                             }
                             self.decorations.append(decoration)
     
+    def _generate_frozen_background(self) -> None:
+        """Generate ice/snow-themed background for Level 5 (Frozen Wasteland)"""
+        # Create varied frozen terrain with ice and snow
+        for x in range(self.grid_width):
+            for y in range(self.grid_height):
+                if (x, y) in self.path_set:
+                    # Path tiles use frozen path sprite
+                    self.background_tiles[(x, y)] = 'frozen_path'
+                else:
+                    # Create layered ice/snow terrain effect
+                    # Use distance from center and edges to create natural variation
+                    center_x, center_y = self.grid_width // 2, self.grid_height // 2
+                    distance_from_center = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
+                    max_distance = ((center_x) ** 2 + (center_y) ** 2) ** 0.5
+                    normalized_distance = distance_from_center / max_distance
+                    
+                    # Edge distance for natural variation
+                    edge_distance = min(x, y, self.grid_width - x - 1, self.grid_height - y - 1)
+                    
+                    # Terrain distribution based on position
+                    terrain_rand = random.random()
+                    
+                    if edge_distance <= 1:  # Outer edge - more ice formations
+                        if terrain_rand < 0.6:  # 60% ice tile
+                            self.background_tiles[(x, y)] = 'ice_tile'
+                        else:  # 40% snow tile
+                            self.background_tiles[(x, y)] = 'snow_tile'
+                    elif normalized_distance < 0.3:  # Inner area - mixed ice and snow
+                        if terrain_rand < 0.4:  # 40% ice tile
+                            self.background_tiles[(x, y)] = 'ice_tile'
+                        else:  # 60% snow tile (more snow in center)
+                            self.background_tiles[(x, y)] = 'snow_tile'
+                    else:  # Middle ring - mostly snow with some ice
+                        if terrain_rand < 0.3:  # 30% ice tile
+                            self.background_tiles[(x, y)] = 'ice_tile'
+                        else:  # 70% snow tile
+                            self.background_tiles[(x, y)] = 'snow_tile'
+        
+        # Add frozen decorations (ice crystals, frozen trees, snow drifts, etc.)
+        # Avoid placing decorations on or too close to the path
+        for x in range(self.grid_width):
+            for y in range(self.grid_height):
+                if (x, y) not in self.path_set:
+                    # Check if area around this position is clear of path
+                    clear_area = True
+                    for dx in range(-1, 2):
+                        for dy in range(-1, 2):
+                            if (x + dx, y + dy) in self.path_set:
+                                clear_area = False
+                                break
+                        if not clear_area:
+                            break
+                    
+                    if clear_area:
+                        # Random chance for decorations based on terrain type
+                        terrain_type = self.background_tiles.get((x, y), 'snow_tile')
+                        rand = random.random()
+                        
+                        if terrain_type == 'ice_tile':
+                            # Ice areas - ice crystals and formations
+                            if rand < 0.12:  # 12% chance for ice crystal
+                                decoration = {
+                                    'type': 'ice_crystal',
+                                    'x': x * GRID_SIZE + random.randint(-8, 8),
+                                    'y': y * GRID_SIZE + random.randint(-8, 8),
+                                    'sprite': 'ice_crystal'
+                                }
+                                self.decorations.append(decoration)
+                            elif rand < 0.20:  # 8% chance for ice formation
+                                decoration = {
+                                    'type': 'ice_formation',
+                                    'x': x * GRID_SIZE + random.randint(-6, 6),
+                                    'y': y * GRID_SIZE + random.randint(-6, 6),
+                                    'sprite': 'ice_formation'
+                                }
+                                self.decorations.append(decoration)
+                            elif rand < 0.25:  # 5% chance for icicle
+                                decoration = {
+                                    'type': 'icicle',
+                                    'x': x * GRID_SIZE + random.randint(-4, 4),
+                                    'y': y * GRID_SIZE + random.randint(-4, 4),
+                                    'sprite': 'icicle'
+                                }
+                                self.decorations.append(decoration)
+                        
+                        elif terrain_type == 'snow_tile':
+                            # Snow areas - frozen trees and snow drifts
+                            if rand < 0.10:  # 10% chance for frozen tree
+                                decoration = {
+                                    'type': 'frozen_tree',
+                                    'x': x * GRID_SIZE + random.randint(-8, 8),
+                                    'y': y * GRID_SIZE + random.randint(-8, 8),
+                                    'sprite': 'frozen_tree'
+                                }
+                                self.decorations.append(decoration)
+                            elif rand < 0.18:  # 8% chance for snow drift
+                                decoration = {
+                                    'type': 'snow_drift',
+                                    'x': x * GRID_SIZE + random.randint(-10, 10),
+                                    'y': y * GRID_SIZE + random.randint(-5, 5),
+                                    'sprite': 'snow_drift'
+                                }
+                                self.decorations.append(decoration)
+                            elif rand < 0.22:  # 4% chance for ice crystal (occasional)
+                                decoration = {
+                                    'type': 'ice_crystal',
+                                    'x': x * GRID_SIZE + random.randint(-6, 6),
+                                    'y': y * GRID_SIZE + random.randint(-6, 6),
+                                    'sprite': 'ice_crystal'
+                                }
+                                self.decorations.append(decoration)
+    
     def _generate_default_background(self) -> None:
         """Generate default background for non-forest levels"""
         # Simple grass background for now
@@ -653,6 +767,12 @@ class Level:
                         color = (200, 185, 170)
                     elif tile_type == 'dark_earth':
                         color = (25, 20, 15)
+                    elif tile_type == 'ice_tile':
+                        color = (200, 230, 255)
+                    elif tile_type == 'snow_tile':
+                        color = (250, 250, 255)
+                    elif tile_type == 'frozen_path':
+                        color = (180, 200, 220)
                     else:  # grass_tile (default)
                         color = (34, 139, 34)
                     pygame.draw.rect(screen, color, (screen_x, screen_y, GRID_SIZE, GRID_SIZE))
@@ -852,6 +972,104 @@ class Level:
                             x = int(screen_x - 12 + i * 4)
                             y = int(screen_y - 3 + (i % 3) * 3)
                             pygame.draw.circle(screen, joint_color, (x, y), 1)
+                    elif decoration['type'] == 'ice_crystal':
+                        # Draw ice crystal formation
+                        crystal_color = (150, 220, 255)
+                        highlight_color = (255, 255, 255)
+                        outline_color = (200, 240, 255)
+                        # Crystal base - diamond shape
+                        points = [
+                            (int(screen_x), int(screen_y - 20)),
+                            (int(screen_x - 10), int(screen_y)),
+                            (int(screen_x), int(screen_y + 20)),
+                            (int(screen_x + 10), int(screen_y))
+                        ]
+                        pygame.draw.polygon(screen, crystal_color, points)
+                        # Crystal outline
+                        pygame.draw.polygon(screen, outline_color, points, 2)
+                        # Inner crystal core
+                        inner_points = [
+                            (int(screen_x), int(screen_y - 12)),
+                            (int(screen_x - 6), int(screen_y)),
+                            (int(screen_x), int(screen_y + 12)),
+                            (int(screen_x + 6), int(screen_y))
+                        ]
+                        pygame.draw.polygon(screen, highlight_color, inner_points)
+                        # Crystal facets
+                        pygame.draw.line(screen, highlight_color, (int(screen_x), int(screen_y - 20)), (int(screen_x), int(screen_y + 20)), 2)
+                        pygame.draw.line(screen, outline_color, (int(screen_x - 10), int(screen_y)), (int(screen_x + 10), int(screen_y)), 2)
+                        # Sparkle effects
+                        sparkle_points = [(int(screen_x - 5), int(screen_y - 10)), (int(screen_x + 5), int(screen_y - 8)), (int(screen_x - 4), int(screen_y + 6)), (int(screen_x + 6), int(screen_y + 10))]
+                        for point in sparkle_points:
+                            pygame.draw.circle(screen, highlight_color, point, 1)
+                    elif decoration['type'] == 'frozen_tree':
+                        # Draw frozen tree with ice-covered branches
+                        trunk_color = (80, 60, 40)
+                        branch_color = (60, 40, 30)
+                        ice_color = (200, 220, 255)
+                        # Brown trunk with ice coating
+                        pygame.draw.rect(screen, trunk_color, (int(screen_x - 3), int(screen_y + 8), 6, 16))
+                        # Ice coating on trunk
+                        pygame.draw.rect(screen, ice_color, (int(screen_x - 4), int(screen_y + 8), 8, 16), 1)
+                        # Frozen branches
+                        pygame.draw.line(screen, branch_color, (int(screen_x - 3), int(screen_y + 4)), (int(screen_x - 12), int(screen_y - 4)), 3)
+                        pygame.draw.line(screen, ice_color, (int(screen_x - 3), int(screen_y + 4)), (int(screen_x - 12), int(screen_y - 4)), 1)
+                        pygame.draw.line(screen, branch_color, (int(screen_x + 3), int(screen_y + 4)), (int(screen_x + 12), int(screen_y - 8)), 3)
+                        pygame.draw.line(screen, ice_color, (int(screen_x + 3), int(screen_y + 4)), (int(screen_x + 12), int(screen_y - 8)), 1)
+                        pygame.draw.line(screen, branch_color, (int(screen_x), int(screen_y - 12)), (int(screen_x - 6), int(screen_y - 20)), 2)
+                        pygame.draw.line(screen, ice_color, (int(screen_x), int(screen_y - 12)), (int(screen_x - 6), int(screen_y - 20)), 1)
+                        pygame.draw.line(screen, branch_color, (int(screen_x), int(screen_y - 12)), (int(screen_x + 8), int(screen_y - 18)), 2)
+                        pygame.draw.line(screen, ice_color, (int(screen_x), int(screen_y - 12)), (int(screen_x + 8), int(screen_y - 18)), 1)
+                    elif decoration['type'] == 'snow_drift':
+                        # Draw snow drift formation
+                        drift_color = (255, 255, 255)
+                        shadow_color = (240, 240, 250)
+                        # Main drift shape - curved mound
+                        pygame.draw.ellipse(screen, drift_color, (int(screen_x - 18), int(screen_y - 6), 36, 12))
+                        # Drift shading
+                        pygame.draw.ellipse(screen, shadow_color, (int(screen_x - 12), int(screen_y - 3), 24, 6))
+                        # Snow texture highlights
+                        for i in range(8):
+                            x = int(screen_x - 12 + i * 3)
+                            y = int(screen_y - 2 + (i % 2))
+                            pygame.draw.circle(screen, drift_color, (x, y), 1)
+                    elif decoration['type'] == 'ice_formation':
+                        # Draw jagged ice formation
+                        ice_color = (150, 200, 255)
+                        highlight_color = (255, 255, 255)
+                        # Main ice block
+                        pygame.draw.rect(screen, ice_color, (int(screen_x - 8), int(screen_y - 8), 16, 16))
+                        # Jagged edges
+                        ice_points = [
+                            (int(screen_x - 8), int(screen_y - 8)), (int(screen_x - 4), int(screen_y - 12)), (int(screen_x), int(screen_y - 8)),
+                            (int(screen_x + 4), int(screen_y - 12)), (int(screen_x + 8), int(screen_y - 8)), (int(screen_x + 12), int(screen_y - 4)),
+                            (int(screen_x + 8), int(screen_y)), (int(screen_x + 12), int(screen_y + 4)), (int(screen_x + 8), int(screen_y + 8)),
+                            (int(screen_x + 4), int(screen_y + 12)), (int(screen_x), int(screen_y + 8)), (int(screen_x - 4), int(screen_y + 12)),
+                            (int(screen_x - 8), int(screen_y + 8)), (int(screen_x - 12), int(screen_y + 4)), (int(screen_x - 8), int(screen_y)),
+                            (int(screen_x - 12), int(screen_y - 4))
+                        ]
+                        pygame.draw.polygon(screen, ice_color, ice_points)
+                        # Ice highlights
+                        pygame.draw.polygon(screen, highlight_color, ice_points, 1)
+                        # Inner detail
+                        pygame.draw.circle(screen, highlight_color, (int(screen_x), int(screen_y)), 3)
+                    elif decoration['type'] == 'icicle':
+                        # Draw hanging icicle
+                        icicle_color = (200, 230, 255)
+                        highlight_color = (255, 255, 255)
+                        # Icicle body - triangle pointing down
+                        icicle_points = [
+                            (int(screen_x), int(screen_y - 16)),
+                            (int(screen_x - 4), int(screen_y - 8)),
+                            (int(screen_x), int(screen_y + 16)),
+                            (int(screen_x + 4), int(screen_y - 8))
+                        ]
+                        pygame.draw.polygon(screen, icicle_color, icicle_points)
+                        # Central highlight
+                        pygame.draw.line(screen, highlight_color, (int(screen_x), int(screen_y - 16)), (int(screen_x), int(screen_y + 16)), 2)
+                        # Side highlights
+                        pygame.draw.line(screen, (220, 230, 255), (int(screen_x - 2), int(screen_y - 8)), (int(screen_x - 1), int(screen_y + 8)), 1)
+                        pygame.draw.line(screen, (220, 230, 255), (int(screen_x + 2), int(screen_y - 8)), (int(screen_x + 1), int(screen_y + 8)), 1)
 
     def _draw_path(self, screen: pygame.Surface) -> None:
         """Draw the enemy path using camera coordinates"""
@@ -894,6 +1112,15 @@ class Level:
                     pygame.draw.line(screen, (60, 35, 30), start_pos, end_pos, 6)
                     # Add eerie highlights
                     pygame.draw.line(screen, (70, 50, 40), start_pos, end_pos, 2)
+                elif self.level_id == 5:  # Frozen Wasteland - icy path
+                    # Draw darker outline first for depth
+                    pygame.draw.line(screen, (140, 160, 180), start_pos, end_pos, 14)
+                    # Draw main frozen path
+                    pygame.draw.line(screen, (180, 200, 220), start_pos, end_pos, 10)
+                    # Add icy blue center line
+                    pygame.draw.line(screen, (200, 220, 240), start_pos, end_pos, 6)
+                    # Add frosty highlights
+                    pygame.draw.line(screen, (230, 240, 255), start_pos, end_pos, 2)
                 else:  # Forest Path - dirt path
                     # Draw darker outline first for depth
                     pygame.draw.line(screen, (100, 50, 15), start_pos, end_pos, 12)

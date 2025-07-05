@@ -9,7 +9,7 @@ A fully-featured tower defense game built with Python and Pygame, featuring 5 un
 - **5 Tower Types**: Cannon, Machine Gun, Missile, Laser, and Freeze towers with unique mechanics
 - **12 Enemy Types**: From basic infantry to advanced threats with special abilities
 - **50 Total Waves**: 10 waves per level with escalating difficulty
-- **Professional Graphics**: 28 custom sprites with comprehensive fallback systems
+- **Professional Graphics**: 57 custom sprites with comprehensive fallback systems
 
 ### Strategic Gameplay
 - **Tower Upgrades**: 3 upgrade levels per tower with significant stat improvements

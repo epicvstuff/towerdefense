@@ -88,6 +88,16 @@ class SpriteManager:
         self._load_or_create_sprite('dark_crystal', (24, 36), (120, 60, 160))  # Larger and more vibrant
         self._load_or_create_sprite('tombstone', (24, 32), (120, 120, 130))  # Larger and lighter
         self._load_or_create_sprite('bone_pile', (36, 24), (240, 220, 200))  # Larger and brighter
+        
+        # Background sprites for frozen level (Level 5)
+        self._load_or_create_sprite('ice_tile', (40, 40), (200, 230, 255))
+        self._load_or_create_sprite('snow_tile', (40, 40), (250, 250, 255))
+        self._load_or_create_sprite('frozen_path', (40, 40), (180, 200, 220))
+        self._load_or_create_sprite('ice_crystal', (28, 40), (150, 220, 255))
+        self._load_or_create_sprite('frozen_tree', (32, 48), (80, 60, 40))
+        self._load_or_create_sprite('snow_drift', (36, 24), (255, 255, 255))
+        self._load_or_create_sprite('ice_formation', (32, 32), (150, 200, 255))
+        self._load_or_create_sprite('icicle', (16, 32), (200, 230, 255))
     
     def _load_or_create_sprite(self, name: str, size: Tuple[int, int], color: Tuple[int, int, int]) -> None:
         """Load sprite from file or create a placeholder if file doesn't exist"""
@@ -568,6 +578,150 @@ class SpriteManager:
                 x = center_x - 12 + i * 4
                 y = center_y - 2 + (i % 3) * 2
                 pygame.draw.circle(sprite, joint_color, (x, y), 1)
+                
+        elif 'ice' in name or 'snow' in name or 'frozen' in name:
+            # Ice/snow themed sprites for Level 5
+            pygame.draw.rect(sprite, color, (0, 0, width, height))
+            
+            if 'ice_tile' in name:
+                # Add crystalline ice patterns
+                for i in range(25):
+                    x = hash((name, i)) % (width - 2)
+                    y = hash((name, i, 'y')) % (height - 2)
+                    if hash((name, i, 'type')) % 3 == 0:
+                        # Ice crystals - brighter
+                        crystal_color = (min(255, color[0] + 30), min(255, color[1] + 15), 255)
+                        pygame.draw.circle(sprite, crystal_color, (x, y), 1)
+                    elif hash((name, i, 'type')) % 3 == 1:
+                        # Ice veins - darker
+                        vein_color = (max(0, color[0] - 30), max(0, color[1] - 20), max(0, color[2] - 20))
+                        pygame.draw.circle(sprite, vein_color, (x, y), 1)
+            elif 'snow_tile' in name:
+                # Add snow texture
+                for i in range(20):
+                    x = hash((name, i)) % (width - 2)
+                    y = hash((name, i, 'y')) % (height - 2)
+                    if hash((name, i, 'type')) % 4 == 0:
+                        # Brighter snow
+                        pygame.draw.circle(sprite, (255, 255, 255), (x, y), 1)
+                    elif hash((name, i, 'type')) % 4 == 1:
+                        # Slightly darker snow
+                        snow_color = (max(0, color[0] - 10), max(0, color[1] - 10), max(0, color[2] - 5))
+                        pygame.draw.circle(sprite, snow_color, (x, y), 1)
+            elif 'frozen_path' in name:
+                # Add ice crack patterns
+                for i in range(15):
+                    x = hash((name, i)) % (width - 4)
+                    y = hash((name, i, 'y')) % (height - 4)
+                    if hash((name, i, 'type')) % 3 == 0:
+                        # Ice cracks - darker lines
+                        crack_color = (max(0, color[0] - 40), max(0, color[1] - 30), max(0, color[2] - 20))
+                        pygame.draw.line(sprite, crack_color, (x, y), (x + 2, y + 2), 1)
+                    elif hash((name, i, 'type')) % 3 == 1:
+                        # Frozen highlights
+                        highlight_color = (min(255, color[0] + 30), min(255, color[1] + 20), min(255, color[2] + 15))
+                        pygame.draw.circle(sprite, highlight_color, (x, y), 1)
+                        
+        elif name == 'ice_crystal':
+            # Large ice crystal formation
+            center_x, center_y = width // 2, height // 2
+            # Crystal base - diamond shape
+            points = [(center_x, center_y - 16), (center_x - 8, center_y), (center_x, center_y + 16), (center_x + 8, center_y)]
+            pygame.draw.polygon(sprite, color, points)
+            # Crystal outline
+            pygame.draw.polygon(sprite, (200, 240, 255), points, 2)
+            # Inner crystal core
+            inner_points = [(center_x, center_y - 10), (center_x - 5, center_y), (center_x, center_y + 10), (center_x + 5, center_y)]
+            pygame.draw.polygon(sprite, (255, 255, 255), inner_points)
+            # Crystal facets
+            pygame.draw.line(sprite, (255, 255, 255), (center_x, center_y - 16), (center_x, center_y + 16), 2)
+            pygame.draw.line(sprite, (220, 240, 255), (center_x - 8, center_y), (center_x + 8, center_y), 2)
+            # Sparkle effects
+            sparkle_points = [(center_x - 4, center_y - 8), (center_x + 4, center_y - 6), (center_x - 3, center_y + 4), (center_x + 5, center_y + 8)]
+            for point in sparkle_points:
+                pygame.draw.circle(sprite, (255, 255, 255), point, 1)
+                
+        elif name == 'frozen_tree':
+            # Frozen tree with ice-covered branches
+            center_x, center_y = width // 2, height // 2
+            # Brown trunk with ice coating
+            trunk_color = (80, 60, 40)
+            pygame.draw.rect(sprite, trunk_color, (center_x - 3, center_y + 8, 6, 16))
+            # Ice coating on trunk
+            pygame.draw.rect(sprite, (220, 230, 255), (center_x - 4, center_y + 8, 8, 16), 1)
+            # Frozen branches
+            branch_color = (60, 40, 30)
+            ice_color = (200, 220, 255)
+            # Left branch
+            pygame.draw.line(sprite, branch_color, (center_x - 3, center_y + 4), (center_x - 12, center_y - 4), 3)
+            pygame.draw.line(sprite, ice_color, (center_x - 3, center_y + 4), (center_x - 12, center_y - 4), 1)
+            # Right branch
+            pygame.draw.line(sprite, branch_color, (center_x + 3, center_y + 4), (center_x + 12, center_y - 8), 3)
+            pygame.draw.line(sprite, ice_color, (center_x + 3, center_y + 4), (center_x + 12, center_y - 8), 1)
+            # Top branches
+            pygame.draw.line(sprite, branch_color, (center_x, center_y - 12), (center_x - 6, center_y - 20), 2)
+            pygame.draw.line(sprite, ice_color, (center_x, center_y - 12), (center_x - 6, center_y - 20), 1)
+            pygame.draw.line(sprite, branch_color, (center_x, center_y - 12), (center_x + 8, center_y - 18), 2)
+            pygame.draw.line(sprite, ice_color, (center_x, center_y - 12), (center_x + 8, center_y - 18), 1)
+            
+        elif name == 'snow_drift':
+            # Snow drift formation
+            center_x, center_y = width // 2, height // 2
+            # Drift shape - curved mound
+            for x in range(width):
+                drift_height = int(height * (1 - x / width) * 0.8)
+                for y in range(height - drift_height, height):
+                    # Snow color with subtle shading
+                    shade_factor = 1.0 - (height - y) / max(1, drift_height)
+                    r = int(255 * (0.9 + 0.1 * shade_factor))
+                    g = int(255 * (0.9 + 0.1 * shade_factor))
+                    b = int(255 * (0.95 + 0.05 * shade_factor))
+                    if x < width and y < height:
+                        pixel_surface = pygame.Surface((1, 1))
+                        pixel_surface.set_at((0, 0), (r, g, b))
+                        sprite.blit(pixel_surface, (x, y))
+            # Add snow texture highlights
+            for i in range(10):
+                x = hash((name, i)) % (width - 2)
+                y = hash((name, i, 'y')) % (height // 2) + height // 2
+                pygame.draw.circle(sprite, (255, 255, 255), (x, y), 1)
+                
+        elif name == 'ice_formation':
+            # Jagged ice formation
+            center_x, center_y = width // 2, height // 2
+            # Main ice block
+            pygame.draw.rect(sprite, color, (center_x - 8, center_y - 8, 16, 16))
+            # Jagged edges
+            ice_points = [
+                (center_x - 8, center_y - 8), (center_x - 4, center_y - 12), (center_x, center_y - 8),
+                (center_x + 4, center_y - 12), (center_x + 8, center_y - 8), (center_x + 12, center_y - 4),
+                (center_x + 8, center_y), (center_x + 12, center_y + 4), (center_x + 8, center_y + 8),
+                (center_x + 4, center_y + 12), (center_x, center_y + 8), (center_x - 4, center_y + 12),
+                (center_x - 8, center_y + 8), (center_x - 12, center_y + 4), (center_x - 8, center_y),
+                (center_x - 12, center_y - 4)
+            ]
+            pygame.draw.polygon(sprite, color, ice_points)
+            # Ice highlights
+            pygame.draw.polygon(sprite, (255, 255, 255), ice_points, 1)
+            # Inner detail
+            pygame.draw.circle(sprite, (255, 255, 255), (center_x, center_y), 3)
+            
+        elif name == 'icicle':
+            # Hanging icicle
+            center_x, center_y = width // 2, height // 2
+            # Icicle body - triangle pointing down
+            icicle_points = [
+                (center_x, center_y - height//2), 
+                (center_x - width//3, center_y - height//4),
+                (center_x, center_y + height//2),
+                (center_x + width//3, center_y - height//4)
+            ]
+            pygame.draw.polygon(sprite, color, icicle_points)
+            # Central highlight
+            pygame.draw.line(sprite, (255, 255, 255), (center_x, center_y - height//2), (center_x, center_y + height//2), 2)
+            # Side highlights
+            pygame.draw.line(sprite, (220, 230, 255), (center_x - 2, center_y - height//4), (center_x - 1, center_y + height//4), 1)
+            pygame.draw.line(sprite, (220, 230, 255), (center_x + 2, center_y - height//4), (center_x + 1, center_y + height//4), 1)
             
         else:
             # Default placeholder
