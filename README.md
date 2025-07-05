@@ -185,6 +185,7 @@ game/
 │   ├── sprite_manager.py           # Graphics loading and fallback
 │   ├── projectile.py               # Projectile mechanics
 │   ├── audio.py                    # Audio management framework
+│   ├── audio_generator.py          # Phase 1: Procedural audio synthesis
 │   └── constants.py                # Game configuration and balance
 │
 └── assets/                         # Game assets
